@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class UserDAO extends BaseDAO{
 
-    private UserDAO instance;
+    private static UserDAO instance;
     private final static String INSERT_USER = "INSERT INTO USER (name, surname, login, password) " +
             "VALUES (?, ?, ?, ?)";
     private final static String GET_USER = "SELECT * FROM USER WHERE login = ?";
@@ -19,7 +19,7 @@ public class UserDAO extends BaseDAO{
 
     private UserDAO(){}
 
-    public UserDAO getInstance(){
+    public static UserDAO getInstance(){
         if (instance != null)
             return instance;
         synchronized (UserDAO.class){

@@ -2,7 +2,7 @@ package bsr.bank.dao;
 
 import java.sql.*;
 
-public class BaseDAO {
+public abstract class BaseDAO {
 
     protected static final String DRIVER = "org.sqlite.JDBC";
     protected static final String DB_URL = "jdbc:sqlite:bank.db";
@@ -80,6 +80,21 @@ public class BaseDAO {
             closeConn(conn);
         }
         return true;
+    }
+
+    protected void clearData(){
+        Statement stat = null;
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            stat = conn.createStatement();
+            stat.execute("DELETE FROM USER");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            closeStmt(stat);
+            closeConn(conn);
+        }
     }
 
 }

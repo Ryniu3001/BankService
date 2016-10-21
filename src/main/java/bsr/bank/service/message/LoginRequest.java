@@ -1,4 +1,4 @@
-package bsr.bank.services.message;
+package bsr.bank.service.message;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -10,18 +10,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class LoginRequest {
 
     @XmlElement(required = true)
-    private String username;
+    private String login;
 
     @XmlElement(required = true)
     private String password;
 
 
-    public String getUsername() {
-        return username;
+    public String getLogin() {
+        return login;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getPassword() {

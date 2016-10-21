@@ -1,9 +1,13 @@
-package bsr.bank.services.message;
+package bsr.bank.service.message;
 
 import javax.xml.ws.WebFault;
 
-@WebFault(messageName = "BankException", faultBean = "bsr.bank.services.message.FaultBean")
+@WebFault(messageName = "BankException", faultBean = "bsr.bank.service.message.FaultBean")
 public class BankServiceException extends Exception {
+
+    public static final int USER_LOGGED_OUT = 1;
+    public static final int BAD_CREDENTIALS = 2;
+    public static final int VALIDATION_ERROR = 3;
 
     private FaultBean faultBean;
 
@@ -23,6 +27,18 @@ public class BankServiceException extends Exception {
     public BankServiceException(String message, FaultBean faultBean) {
         super(message);
         this.faultBean = faultBean;
+    }
+
+    public BankServiceException(FaultBean faultBean) {
+        super();
+        this.faultBean = faultBean;
+    }
+
+    public BankServiceException(String faultBeanMessage, Integer faultCode) {
+        super();
+        FaultBean bean = new FaultBean();
+        bean.setDetails(faultBeanMessage);
+        bean.setCode(faultCode);
     }
 
     public FaultBean getFaultInfo() {

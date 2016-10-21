@@ -1,6 +1,7 @@
 package bsr.bank.dao.message;
 
-import bsr.bank.services.message.RegisterRequest;
+import bsr.bank.service.message.LoginRequest;
+import bsr.bank.service.message.RegisterRequest;
 
 public class UserMsg {
 
@@ -15,6 +16,11 @@ public class UserMsg {
     public UserMsg(RegisterRequest request){
         this.name = request.getName();
         this.surname = request.getSurname();
+        this.login = request.getLogin();
+        this.password = request.getPassword();
+    }
+
+    public UserMsg(LoginRequest request){
         this.login = request.getLogin();
         this.password = request.getPassword();
     }
