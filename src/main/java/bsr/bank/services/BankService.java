@@ -1,8 +1,7 @@
 package bsr.bank.services;
 
 import bsr.bank.services.message.BankServiceException;
-import bsr.bank.services.message.LoginRequest;
-import bsr.bank.services.message.LoginResponse;
+import bsr.bank.services.message.RegisterRequest;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -14,13 +13,10 @@ import javax.xml.ws.BindingType;
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
 public class BankService {
 
-    @WebMethod(operationName = "signIn")
-    public LoginResponse signIn(LoginRequest request) throws BankServiceException{
-        LoginResponse response = new LoginResponse();
+    @WebMethod(operationName = "register")
+    public void register(RegisterRequest request) throws BankServiceException{
 
 
-        throw new BankServiceException();
 
-       // return response;
     }
 }

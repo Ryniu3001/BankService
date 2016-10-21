@@ -1,12 +1,23 @@
 package bsr.bank.dao.message;
 
+import bsr.bank.services.message.RegisterRequest;
+
 public class UserMsg {
 
-    Integer id;
-    String name;
-    String surname;
-    String login;
-    String password;
+    private Integer id;
+    private String name;
+    private String surname;
+    private String login;
+    private String password;
+
+    public UserMsg(){}
+
+    public UserMsg(RegisterRequest request){
+        this.name = request.getName();
+        this.surname = request.getSurname();
+        this.login = request.getLogin();
+        this.password = request.getPassword();
+    }
 
     public Integer getId() {
         return id;
@@ -47,4 +58,6 @@ public class UserMsg {
     public void setPassword(String password) {
         this.password = password;
     }
+
+
 }

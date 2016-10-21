@@ -7,29 +7,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class LoginRequest {
+public class NewAccountRequest {
+    @XmlElement(required = true)
+    private Integer userLogin;
 
     @XmlElement(required = true)
-    private String username;
+    private Integer password;
 
-    @XmlElement(required = true)
-    private String password;
-
-
-    public String getUsername() {
-        return username;
+    public Integer getUserLogin() {
+        return userLogin;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserLogin(Integer userLogin) {
+        this.userLogin = userLogin;
     }
 
-    public String getPassword() {
+    public Integer getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(Integer password) {
         this.password = password;
     }
 }
-
