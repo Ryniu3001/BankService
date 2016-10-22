@@ -12,7 +12,7 @@ public class OperationMsg {
     private Integer amount;
     private String sourceIban;
     private Integer balance;
-    private Account account;
+    private String accountNumber;
 
     public Integer getId() {
         return id;
@@ -62,11 +62,11 @@ public class OperationMsg {
         this.balance = balance;
     }
 
-    public Account getAccount() {
-        return account;
+    public String getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 }

@@ -1,5 +1,6 @@
 package bsr.bank;
 
+import bsr.bank.dao.AccountDAO;
 import bsr.bank.service.BankService;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -20,6 +21,8 @@ public class App {
         httpServer.getServerConfiguration().addHttpHandler(httpHandler, "/bankService");
         httpServer.addListener(networkListener);
         httpServer.start();
+
+        AccountDAO.getInstance().createTables();
         System.in.read();
         httpServer.shutdown();
 

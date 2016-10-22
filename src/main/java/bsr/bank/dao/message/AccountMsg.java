@@ -1,10 +1,10 @@
 package bsr.bank.dao.message;
 
-public class Account {
+public class AccountMsg {
     private Integer id;
     private String accountNumber;
     private Integer balance;
-    private UserMsg user;
+    private Integer userId;
 
     public Integer getId() {
         return id;
@@ -30,11 +30,11 @@ public class Account {
         this.balance = balance;
     }
 
-    public UserMsg getUser() {
-        return user;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setUser(UserMsg user) {
-        this.user = user;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 }

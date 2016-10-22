@@ -53,7 +53,7 @@ public abstract class BaseDAO {
         }
     }
 
-    protected boolean createTables(){
+    public boolean createTables(){
         String createUser = "CREATE TABLE User (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name STRING (30) NOT NULL, surname  STRING (40) NOT NULL, " +
                 "login STRING (50) NOT NULL UNIQUE, password STRING (50) NOT NULL);";
@@ -61,8 +61,8 @@ public abstract class BaseDAO {
                 " number STRING (30) NOT NULL UNIQUE, balance DECIMAL NOT NULL, " +
                 " userId INTEGER CONSTRAINT account_user_fk REFERENCES User (id) ON DELETE CASCADE);";
         String createOperation = "CREATE TABLE Operation (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "type INTEGER (1) NOT NULL, amount DECIMAL NOT NULL, sourceIban INTEGER NOT NULL, " +
-                "balance DECIMAL NOT NULL, accountId INTEGER NOT NULL CONSTRAINT operation_account_fk REFERENCES Account (id) ON DELETE CASCADE);";
+                "title STRING (200) NOT NULL, type INTEGER (1) NOT NULL, amount DECIMAL NOT NULL, sourceIban INTEGER NOT NULL, " +
+                "balance DECIMAL NOT NULL, accountNumber STRING(30) NOT NULL CONSTRAINT operation_account_fk REFERENCES Account (number) ON DELETE CASCADE);";
         Statement stat = null;
         Connection conn = null;
         try {
