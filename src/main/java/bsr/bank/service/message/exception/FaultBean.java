@@ -1,4 +1,4 @@
-package bsr.bank.service.message;
+package bsr.bank.service.message.exception;
 
 public class FaultBean {
 

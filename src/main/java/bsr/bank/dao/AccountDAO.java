@@ -14,9 +14,11 @@ public class AccountDAO extends BaseDAO {
     private final static String INSERT_ACCOUNT = "INSERT INTO ACCOUNT (number, balance, userId) " +
             "VALUES (?, ?, ?)";
     private final static String GET_ACCOUNT = "SELECT * FROM ACCOUNT WHERE NUMBER = ?";
-    private final static String GET_ACCOUNT_LIST = "SELECT * FROM ACCOUNT WHERE userId = ?";
+    private final static String GET_ACCOUNT_LIST = "SELECT * FROM ACCOUNT WHERE 1=1";
     private final static String DELETE_ACCOUNT = "DELETE FROM ACCOUNT WHERE NUMBER = ?";
-    private final static String UPDATE_ACCOUNT = "UPDATE ACCOUNT SET balance = ?";
+    private final static String SELECT_MAX_ID = "SELECT MAX(ID) AS MAXID FROM ACCOUNT";
+    private final static String UPDATE_ACCOUNT = "UPDATE ACCOUNT SET balance = ? WHERE number = ?";
+
 
     private AccountDAO(){}
 
@@ -71,15 +73,36 @@ public class AccountDAO extends BaseDAO {
         return msg;
     }
 
+    public Integer getMaxId(){
+        PreparedStatement stmt = null;
+        Connection conn = getConnection();
+        ResultSet rs = null;
+        try {
+            stmt = conn.prepareStatement(SELECT_MAX_ID);
+            while ( rs.next() ) {
+                return rs.getInt("MAXID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            closeRs(rs);
+            closeStmt(stmt);
+            closeConn(conn);
+        }
+        return null;
+    }
+
+
     public List<AccountMsg> getList(AccountMsg msg){
         PreparedStatement stmt = null;
         Connection conn = getConnection();
         ResultSet rs = null;
         List<AccountMsg> accountList = new ArrayList<>();
         try {
-            stmt = conn.prepareStatement(GET_ACCOUNT);
-            int idx = 1;
-            stmt.setInt(idx++, msg.getUserId());
+            String query = GET_ACCOUNT_LIST;
+            if (msg.getUserId() != null)
+                query += " AND userId = " + msg.getUserId().intValue();
+            stmt = conn.prepareStatement(query);
             rs = stmt.executeQuery();
             while ( rs.next() ) {
                 accountList.add(populateMsg(rs));
@@ -110,19 +133,28 @@ public class AccountDAO extends BaseDAO {
         }
     }
 
-    public void update(AccountMsg msg){
+    public void update(AccountMsg msg, Connection conn) throws SQLException {
         PreparedStatement stmt = null;
-        Connection conn = getConnection();
+        boolean connProvided = false;
+        if (conn == null)
+            conn = getConnection();
+        else
+            connProvided = true;
         try {
             stmt = conn.prepareStatement(UPDATE_ACCOUNT);
             int idx = 1;
             stmt.setInt(idx++, msg.getBalance());
+            stmt.setString(idx++, msg.getAccountNumber());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            if (connProvided)
+                throw e;
         }finally {
             closeStmt(stmt);
-            closeConn(conn);
+            if (!connProvided) {
+                closeConn(conn);
+            }
         }
     }
 

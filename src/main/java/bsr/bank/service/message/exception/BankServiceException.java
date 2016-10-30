@@ -1,8 +1,8 @@
-package bsr.bank.service.message;
+package bsr.bank.service.message.exception;
 
 import javax.xml.ws.WebFault;
 
-@WebFault(messageName = "BankException", faultBean = "bsr.bank.service.message.FaultBean")
+@WebFault(messageName = "BankException", faultBean = "bsr.bank.service.message.exception.FaultBean")
 public class BankServiceException extends Exception {
 
     public static final int USER_LOGGED_OUT = 1;

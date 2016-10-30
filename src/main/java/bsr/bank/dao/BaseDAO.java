@@ -7,7 +7,7 @@ public abstract class BaseDAO {
     protected static final String DRIVER = "org.sqlite.JDBC";
     protected static final String DB_URL = "jdbc:sqlite:bank.db";
 
-    protected Connection getConnection(){
+    protected  Connection getConnection() {
         Connection conn = null;
         try {
             Class.forName(DRIVER);

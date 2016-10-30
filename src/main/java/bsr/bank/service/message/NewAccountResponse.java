@@ -17,6 +17,15 @@ public class NewAccountResponse {
     @XmlElement
     private String userLogin;
 
+    public NewAccountResponse() {
+    }
+
+    public NewAccountResponse(String accNumber, Integer balance, String userLogin) {
+        this.accNumber = accNumber;
+        this.balance = balance;
+        this.userLogin = userLogin;
+    }
+
     public String getAccNumber() {
         return accNumber;
     }

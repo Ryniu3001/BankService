@@ -9,18 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class LogOutRequest {
     @XmlElement(required = true)
-    String login;
-
-    @XmlElement(required = true)
     String uid;
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
 
     public String getUid() {
         return uid;

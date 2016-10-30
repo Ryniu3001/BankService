@@ -1,6 +1,5 @@
 package bsr.bank;
 
-import bsr.bank.dao.AccountDAO;
 import bsr.bank.service.BankService;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -10,9 +9,7 @@ import org.glassfish.grizzly.jaxws.JaxwsHandler;
 import java.io.IOException;
 
 public class App {
-
-
-
+    public static String THIS_BANK = "00109711";
     public static void main(String[] args) throws IOException {
         HttpServer httpServer = new HttpServer();
         NetworkListener networkListener = new NetworkListener("jaxws-listener", "127.0.0.1", 8088);
@@ -22,9 +19,7 @@ public class App {
         httpServer.addListener(networkListener);
         httpServer.start();
 
-        AccountDAO.getInstance().createTables();
         System.in.read();
         httpServer.shutdown();
-
     }
 }

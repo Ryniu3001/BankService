@@ -1,5 +1,7 @@
 package bsr.bank.service;
 
+import bsr.bank.App;
+import bsr.bank.dao.AccountDAO;
 import bsr.bank.dao.UserDAO;
 import bsr.bank.dao.message.UserMsg;
 import bsr.bank.service.message.LoginRequest;
@@ -8,27 +10,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+
 public class Utils {
 
-    private static final Map<String, UUID> sessions = new HashMap<>();
 
-    public static boolean isUserLogged(String login) {
-        UUID id = sessions.get(login);
-        if (id == null)
-            return false;
-        return true;
+    private static final Map<String, String> sessions = new HashMap<>();
+
+    public static String getUserLoginFromSession(String uuid) {
+        String login = sessions.get(uuid);
+        return login;
     }
 
-    public static void removeUserFromSession(String login) {
-        sessions.remove(login);
+    public static void removeSession(String uuid) {
+        sessions.remove(uuid);
     }
 
-    public static UUID createUserSession(String login){
-        UUID id = sessions.get(login);
+    public static String createUserSession(String login){
+        String id = sessions.entrySet().stream()
+                                        .filter(entry -> entry.getValue().equals(login))
+                                        .map(entry -> entry.getKey())
+                                        .findFirst()
+                                        .get();
         if (id != null)
             return id;
-        id = UUID.randomUUID();
-        sessions.put(login, id);
+        id = UUID.randomUUID().toString();
+        sessions.put(id, login);
         return id;
     }
 
@@ -38,4 +44,19 @@ public class Utils {
             return user;
         return null;
     }
+
+    public static String createNewAccountNumber(){
+        Integer maxId = AccountDAO.getInstance().getMaxId();
+        StringBuffer sb = new StringBuffer(maxId);
+        while (sb.length() != 16)
+            sb.insert(0, "0");
+        String accNumber = "48" + App.THIS_BANK + sb;
+        return accNumber;
+    }
+
+    public static String getBankId(String accNumber){
+        return accNumber.substring(2,10);
+    }
+
+
 }

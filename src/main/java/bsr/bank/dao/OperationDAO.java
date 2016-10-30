@@ -1,22 +1,23 @@
 package bsr.bank.dao;
 
+import bsr.bank.dao.message.AccountMsg;
 import bsr.bank.dao.message.OperationMsg;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OperationDAO extends BaseDAO{
     private static OperationDAO instance;
 
-    private final static String INSERT_OPERATION = "INSERT INTO OPERATION (title, type, amount, sourceIban, balance, accountNumber) " +
-            "VALUES (?, ?, ?, ?, ?, ?)";
+    private final static String INSERT_OPERATION = "INSERT INTO OPERATION (title, type, amount, sourceNRB, balance, accountNumber, date) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?)";
     private final static String GET_OPERATION = "SELECT * FROM OPERATION WHERE ID = ?";
     private final static String GET_OPERATION_LIST = "SELECT * FROM OPERATION WHERE accountNumber = ?";
     private final static String DELETE_OPERATION = "DELETE FROM OPERATION WHERE ID = ?";
+
+    private final static String UPDATE_ACCOUNT = "UPDATE ACCOUNT SET balance = ? + (select balance from ACCOUNT WHERE number = ?) WHERE number = ?";
+    private final static String GET_ACCOUNT = "SELECT * FROM ACCOUNT WHERE NUMBER = ?";
 
     private OperationDAO(){}
 
@@ -31,9 +32,13 @@ public class OperationDAO extends BaseDAO{
         return instance;
     }
 
-    public void create(OperationMsg msg){
+    public void create(OperationMsg msg, Connection conn) throws SQLException {
         PreparedStatement stmt = null;
-        Connection conn = getConnection();
+        boolean connProvided = false;
+        if (conn == null)
+            conn = getConnection();
+        else
+            connProvided = true;
         try {
             stmt = conn.prepareStatement(INSERT_OPERATION);
             int idx = 1;
@@ -43,12 +48,16 @@ public class OperationDAO extends BaseDAO{
             stmt.setString(idx++, msg.getSourceIban());
             stmt.setInt(idx++, msg.getBalance());
             stmt.setString(idx++, msg.getAccountNumber());
+            stmt.setLong(idx++, msg.getDate());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            if (connProvided)
+                throw e;
         }finally {
             closeStmt(stmt);
-            closeConn(conn);
+            if (!connProvided)
+                closeConn(conn);
         }
     }
 
@@ -112,6 +121,40 @@ public class OperationDAO extends BaseDAO{
             closeConn(conn);
         }
     }
+
+    public synchronized void transfer(OperationMsg srcAccOp, OperationMsg targetAccOp){
+        Connection conn = getConnection();
+        try {
+            conn.setAutoCommit(false); //dla spójności
+
+            //Pobranie kont
+            AccountMsg srcAcc = new AccountMsg(srcAccOp.getAccountNumber());
+            AccountMsg targetAcc = new AccountMsg(targetAccOp.getAccountNumber());
+            srcAcc = AccountDAO.getInstance().get(srcAcc);
+            targetAcc = AccountDAO.getInstance().get(targetAcc);
+
+            srcAcc.addToBalance(srcAccOp.getAmount());
+            targetAcc.addToBalance(targetAccOp.getAmount());
+
+            //Aktualizacja stanu kont
+            AccountDAO.getInstance().update(srcAcc, conn);
+            AccountDAO.getInstance().update(targetAcc, conn);
+
+            srcAccOp.setBalance(srcAcc.getBalance());
+            targetAccOp.setBalance(targetAcc.getBalance());
+
+            this.create(srcAccOp, conn);
+            this.create(targetAccOp, conn);
+
+            conn.commit();
+        } catch (Exception e) {
+            try { conn.rollback(); } catch (SQLException e1) { e1.printStackTrace(); }
+            e.printStackTrace();
+        }finally {
+            closeConn(conn);
+        }
+    }
+
 
     private OperationMsg populateMsg(ResultSet rs) throws SQLException {
         OperationMsg msg = new OperationMsg();

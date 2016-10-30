@@ -1,9 +1,11 @@
 package bsr.bank.dao.message;
 
+
 public class OperationMsg {
 
-    public static final int typePayment = 1;
-    public static final int typePayoff = 2;
+    public static final int typeTransfer = 0;
+    public static final int typeDeposit = 1;
+    public static final int typeWithdraw = 2;
     public static final int typeBankFee = 3;
 
     private Integer id;
@@ -13,6 +15,14 @@ public class OperationMsg {
     private String sourceIban;
     private Integer balance;
     private String accountNumber;
+    private Long date;
+
+    public OperationMsg() {
+    }
+
+    public OperationMsg(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 
     public Integer getId() {
         return id;
@@ -68,5 +78,13 @@ public class OperationMsg {
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public Long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
     }
 }
