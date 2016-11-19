@@ -56,6 +56,7 @@ public class ServiceValidator {
 
     private static void validateAccountNumber(String accNumber) throws BankServiceException {
         if (accNumber.isEmpty()) throwValidationEx("AccountNumber cannot be empty");
+        if (!Utils.checkNRB(accNumber)) throwValidationEx(accNumber + " is not correct PL account number.");
     }
 
     private static void validateTitle(String title) throws BankServiceException {

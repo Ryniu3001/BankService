@@ -1,24 +1,24 @@
 package bsr.bank.service;
 
 import bsr.bank.App;
-import bsr.bank.dao.OperationDAO;
 import bsr.bank.dao.UserDAO;
-import bsr.bank.dao.message.OperationMsg;
 import bsr.bank.dao.message.UserMsg;
+import bsr.bank.exception.NoAccountException;
 import bsr.bank.service.message.*;
 import bsr.bank.service.message.exception.BankServiceException;
-import com.sun.xml.ws.developer.SchemaValidation;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.ws.BindingType;
-import java.util.Calendar;
+
+import static bsr.bank.service.Utils.transferMoneyExternal;
+import static bsr.bank.service.Utils.transferMoneyInternal;
 
 @WebService(name = "BankPortType", portName = "BankPort", serviceName = "BankService", targetNamespace = "http://bsr.bank.pl")
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, parameterStyle = SOAPBinding.ParameterStyle.BARE, use = SOAPBinding.Use.LITERAL)
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
-@SchemaValidation
+//@SchemaValidation
 public class BankService {
 
     @WebMethod(operationName = "register")
@@ -57,12 +57,15 @@ public class BankService {
     public void transfer(TransferRequest request) throws BankServiceException {
         ServiceValidator.validate(request);
         String login = getLogin(request.getUuid());
-        if (Utils.getBankId(request.getTargetAccountNumber()).equals(App.THIS_BANK)){
-
-        }else{
-            //przelew zew
+        try {
+            if (Utils.getBankId(request.getTargetAccountNumber()).equals(App.THIS_BANK)) {
+                transferMoneyInternal(request);
+            } else {
+                transferMoneyExternal(request);
+            }
+        } catch (NoAccountException ex){
+            throw new BankServiceException(ex.getMessage(), BankServiceException.NO_ACCOUNT);
         }
-
     }
 
     private String getLogin(String uuid) throws BankServiceException {
@@ -70,23 +73,5 @@ public class BankService {
         if (login == null)
             throw new BankServiceException("User not logged in or session expired.", BankServiceException.USER_LOGGED_OUT);
         return login;
-    }
-
-
-    public static void transferMoney(TransferRequest request){
-        OperationMsg srcAccOp = new OperationMsg(request.getSourceAccountNumber());
-        srcAccOp.setType(OperationMsg.typeTransfer);
-        srcAccOp.setAmount(0 - request.getAmount());
-        srcAccOp.setTitle(request.getTitle());
-        srcAccOp.setDate(System.currentTimeMillis() / 1000L);
-
-        OperationMsg targetAccOp = new OperationMsg(request.getTargetAccountNumber());
-        targetAccOp.setType(OperationMsg.typeTransfer);
-        targetAccOp.setAmount(request.getAmount());
-        targetAccOp.setTitle(request.getTitle());
-        targetAccOp.setSourceIban(request.getSourceAccountNumber());
-        targetAccOp.setDate(System.currentTimeMillis() / 1000L);
-
-        OperationDAO.getInstance().transfer(srcAccOp, targetAccOp);
     }
 }

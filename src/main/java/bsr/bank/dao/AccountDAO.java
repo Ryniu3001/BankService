@@ -79,6 +79,7 @@ public class AccountDAO extends BaseDAO {
         ResultSet rs = null;
         try {
             stmt = conn.prepareStatement(SELECT_MAX_ID);
+            rs = stmt.executeQuery();
             while ( rs.next() ) {
                 return rs.getInt("MAXID");
             }

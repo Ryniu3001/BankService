@@ -2,6 +2,7 @@ package bsr.bank.dao;
 
 import bsr.bank.dao.message.AccountMsg;
 import bsr.bank.dao.message.OperationMsg;
+import bsr.bank.exception.NoAccountException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 public class OperationDAO extends BaseDAO{
     private static OperationDAO instance;
 
-    private final static String INSERT_OPERATION = "INSERT INTO OPERATION (title, type, amount, sourceNRB, balance, accountNumber, date) " +
+    private final static String INSERT_OPERATION = "INSERT INTO OPERATION (title, type, amount, NRB, balance, accountNumber, date) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
     private final static String GET_OPERATION = "SELECT * FROM OPERATION WHERE ID = ?";
     private final static String GET_OPERATION_LIST = "SELECT * FROM OPERATION WHERE accountNumber = ?";
@@ -45,7 +46,7 @@ public class OperationDAO extends BaseDAO{
             stmt.setString(idx++, msg.getTitle());
             stmt.setInt(idx++, msg.getType());
             stmt.setInt(idx++, msg.getAmount());
-            stmt.setString(idx++, msg.getSourceIban());
+            stmt.setString(idx++, msg.getNrb());
             stmt.setInt(idx++, msg.getBalance());
             stmt.setString(idx++, msg.getAccountNumber());
             stmt.setLong(idx++, msg.getDate());
@@ -122,7 +123,7 @@ public class OperationDAO extends BaseDAO{
         }
     }
 
-    public synchronized void transfer(OperationMsg srcAccOp, OperationMsg targetAccOp){
+    public synchronized void transfer(OperationMsg srcAccOp, OperationMsg targetAccOp) throws NoAccountException {
         Connection conn = getConnection();
         try {
             conn.setAutoCommit(false); //dla spójności
@@ -132,6 +133,10 @@ public class OperationDAO extends BaseDAO{
             AccountMsg targetAcc = new AccountMsg(targetAccOp.getAccountNumber());
             srcAcc = AccountDAO.getInstance().get(srcAcc);
             targetAcc = AccountDAO.getInstance().get(targetAcc);
+            if (targetAcc.getId() == null)
+                throw new NoAccountException("Konto odbiorcy nie istnieje.");
+            else if (srcAcc.getId() == null)
+                throw new NoAccountException("Konto nadawcy nie istnieje.");
 
             srcAcc.addToBalance(srcAccOp.getAmount());
             targetAcc.addToBalance(targetAccOp.getAmount());
@@ -147,6 +152,43 @@ public class OperationDAO extends BaseDAO{
             this.create(targetAccOp, conn);
 
             conn.commit();
+        } catch (NoAccountException ex){
+            throw ex;
+        } catch (Exception e) {
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        } finally {
+            closeConn(conn);
+        }
+    }
+
+    public void transfer(OperationMsg operation) throws NoAccountException {
+        Connection conn = getConnection();
+        try {
+            conn.setAutoCommit(false);
+
+            //Pobranie kont
+            AccountMsg targetAcc = new AccountMsg(operation.getAccountNumber());
+            targetAcc = AccountDAO.getInstance().get(targetAcc);
+            if (targetAcc.getId() == null)
+                throw new NoAccountException("Brak konta odbiorcy!");
+
+            targetAcc.addToBalance(operation.getAmount());
+
+            //Aktualizacja stanu kont
+            AccountDAO.getInstance().update(targetAcc, conn);
+
+            operation.setBalance(targetAcc.getBalance());
+
+            this.create(operation, conn);
+
+            conn.commit();
+        } catch (NoAccountException ex){
+            throw ex;
         } catch (Exception e) {
             try { conn.rollback(); } catch (SQLException e1) { e1.printStackTrace(); }
             e.printStackTrace();
@@ -163,7 +205,7 @@ public class OperationDAO extends BaseDAO{
         msg.setBalance(rs.getInt("balance"));
         msg.setAmount(rs.getInt("amount"));
         msg.setTitle(rs.getString("title"));
-        msg.setSourceIban(rs.getString("sourceIban"));
+        msg.setNrb(rs.getString("sourceIban"));
         msg.setType(rs.getInt(rs.getInt("type")));
         return msg;
     }

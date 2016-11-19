@@ -12,7 +12,7 @@ public class OperationMsg {
     private String title;
     private Integer type;
     private Integer amount;
-    private String sourceIban;
+    private String nrb;
     private Integer balance;
     private String accountNumber;
     private Long date;
@@ -56,12 +56,12 @@ public class OperationMsg {
         this.amount = amount;
     }
 
-    public String getSourceIban() {
-        return sourceIban;
+    public String getNrb() {
+        return nrb;
     }
 
-    public void setSourceIban(String sourceIban) {
-        this.sourceIban = sourceIban;
+    public void setNrb(String nrb) {
+        this.nrb = nrb;
     }
 
     public Integer getBalance() {
