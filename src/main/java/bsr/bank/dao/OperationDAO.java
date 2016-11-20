@@ -2,7 +2,7 @@ package bsr.bank.dao;
 
 import bsr.bank.dao.message.AccountMsg;
 import bsr.bank.dao.message.OperationMsg;
-import bsr.bank.exception.NoAccountException;
+import bsr.bank.service.message.exception.BankServiceException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -123,7 +123,7 @@ public class OperationDAO extends BaseDAO{
         }
     }
 
-    public synchronized void transfer(OperationMsg srcAccOp, OperationMsg targetAccOp) throws NoAccountException {
+    public synchronized void transfer(OperationMsg srcAccOp, OperationMsg targetAccOp) throws BankServiceException {
         Connection conn = getConnection();
         try {
             conn.setAutoCommit(false); //dla spójności
@@ -134,9 +134,9 @@ public class OperationDAO extends BaseDAO{
             srcAcc = AccountDAO.getInstance().get(srcAcc);
             targetAcc = AccountDAO.getInstance().get(targetAcc);
             if (targetAcc.getId() == null)
-                throw new NoAccountException("Konto odbiorcy nie istnieje.");
+                throw new BankServiceException("Konto odbiorcy nie istnieje.", BankServiceException.NO_ACCOUNT);
             else if (srcAcc.getId() == null)
-                throw new NoAccountException("Konto nadawcy nie istnieje.");
+                throw new BankServiceException("Konto nadawcy nie istnieje.", BankServiceException.NO_ACCOUNT);
 
             srcAcc.addToBalance(srcAccOp.getAmount());
             targetAcc.addToBalance(targetAccOp.getAmount());
@@ -152,7 +152,7 @@ public class OperationDAO extends BaseDAO{
             this.create(targetAccOp, conn);
 
             conn.commit();
-        } catch (NoAccountException ex){
+        } catch (BankServiceException ex){
             throw ex;
         } catch (Exception e) {
             try {
@@ -166,7 +166,7 @@ public class OperationDAO extends BaseDAO{
         }
     }
 
-    public void transfer(OperationMsg operation) throws NoAccountException {
+    public void transfer(OperationMsg operation) throws BankServiceException {
         Connection conn = getConnection();
         try {
             conn.setAutoCommit(false);
@@ -175,7 +175,7 @@ public class OperationDAO extends BaseDAO{
             AccountMsg targetAcc = new AccountMsg(operation.getAccountNumber());
             targetAcc = AccountDAO.getInstance().get(targetAcc);
             if (targetAcc.getId() == null)
-                throw new NoAccountException("Brak konta odbiorcy!");
+                throw new BankServiceException("Brak konta odbiorcy!", BankServiceException.NO_ACCOUNT);
 
             targetAcc.addToBalance(operation.getAmount());
 
@@ -187,7 +187,7 @@ public class OperationDAO extends BaseDAO{
             this.create(operation, conn);
 
             conn.commit();
-        } catch (NoAccountException ex){
+        } catch (BankServiceException ex){
             throw ex;
         } catch (Exception e) {
             try { conn.rollback(); } catch (SQLException e1) { e1.printStackTrace(); }

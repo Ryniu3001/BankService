@@ -9,7 +9,7 @@ public class TransferExternalMsg {
     private Integer amount;
     @JsonProperty("sender_account")
     private String senderAccount;
-    @JsonProperty("eceiver_account")
+    @JsonProperty("receiver_account")
     private String receiverAccount;
     private String title;
 

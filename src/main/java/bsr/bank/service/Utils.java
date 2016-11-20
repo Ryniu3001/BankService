@@ -6,19 +6,19 @@ import bsr.bank.dao.OperationDAO;
 import bsr.bank.dao.UserDAO;
 import bsr.bank.dao.message.OperationMsg;
 import bsr.bank.dao.message.UserMsg;
-import bsr.bank.exception.NoAccountException;
+import bsr.bank.rest.RestClient;
 import bsr.bank.service.message.LoginRequest;
 import bsr.bank.service.message.TransferRequest;
+import bsr.bank.service.message.exception.BankServiceException;
 
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 
 public class Utils {
-
-
     private static final Map<String, String> sessions = new HashMap<>();
 
     public static String getUserLoginFromSession(String uuid) {
@@ -31,16 +31,15 @@ public class Utils {
     }
 
     public static String createUserSession(String login){
-        String id = sessions.entrySet().stream()
+        Optional<String> id = sessions.entrySet().stream()
                                         .filter(entry -> entry.getValue().equals(login))
                                         .map(entry -> entry.getKey())
-                                        .findFirst()
-                                        .get();
-        if (id != null)
-            return id;
-        id = UUID.randomUUID().toString();
-        sessions.put(id, login);
-        return id;
+                                        .findFirst();
+        if (id.isPresent())
+            return id.get();
+        String newId = UUID.randomUUID().toString();
+        sessions.put(newId, login);
+        return newId;
     }
 
     public static UserMsg validateCredentials(LoginRequest request){
@@ -61,6 +60,11 @@ public class Utils {
     }
 
     public static String getBankId(String accNumber){
+        if (accNumber == null || accNumber.isEmpty()) {
+            System.out.println("Niepoprawny numer konta.");
+            return null;
+        }
+        checkNRB(accNumber);
         return accNumber.substring(2,10);
     }
 
@@ -69,7 +73,7 @@ public class Utils {
      * @param number 24 znakowy numer, bez kodu kraju i początkowych dwóch cyfr
      * @return
      */
-    private static String calculateNRB(String number){
+    public static String calculateNRB(String number){
         if (number.length() != 24)
             throw new IllegalArgumentException("Numer rachunku nieprawidłowy.");
         String nr2 = number + "252100";
@@ -95,20 +99,26 @@ public class Utils {
         return false;
     }
 
-    public static void transferMoneyExternal(TransferRequest request) throws NoAccountException {
+    public static void transferMoneyExternal(TransferRequest request) throws BankServiceException {
+
+        RestClient.invokeTransfer(request);
+
         OperationMsg operationMsg = new OperationMsg(request.getSourceAccountNumber());
         operationMsg.setTitle(request.getTitle());
-        operationMsg.setAmount(request.getAmount());
+        operationMsg.setAmount(-request.getAmount());
         operationMsg.setNrb(request.getTargetAccountNumber());
         operationMsg.setType(OperationMsg.typeTransfer);
+        operationMsg.setDate(System.currentTimeMillis() / 1000L);
         OperationDAO.getInstance().transfer(operationMsg);
     }
 
-    public static void transferMoneyInternal(TransferRequest request) throws NoAccountException {
+    public static void transferMoneyInternal(TransferRequest request) throws BankServiceException {
+
         OperationMsg srcAccOp = new OperationMsg(request.getSourceAccountNumber());
         srcAccOp.setType(OperationMsg.typeTransfer);
         srcAccOp.setAmount(0 - request.getAmount());
         srcAccOp.setTitle(request.getTitle());
+        srcAccOp.setNrb(request.getTargetAccountNumber());
         srcAccOp.setDate(System.currentTimeMillis() / 1000L);
 
         OperationMsg targetAccOp = new OperationMsg(request.getTargetAccountNumber());

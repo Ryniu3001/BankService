@@ -3,9 +3,9 @@ package bsr.bank.service;
 import bsr.bank.App;
 import bsr.bank.dao.UserDAO;
 import bsr.bank.dao.message.UserMsg;
-import bsr.bank.exception.NoAccountException;
 import bsr.bank.service.message.*;
 import bsr.bank.service.message.exception.BankServiceException;
+import com.sun.xml.ws.developer.SchemaValidation;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -18,7 +18,7 @@ import static bsr.bank.service.Utils.transferMoneyInternal;
 @WebService(name = "BankPortType", portName = "BankPort", serviceName = "BankService", targetNamespace = "http://bsr.bank.pl")
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, parameterStyle = SOAPBinding.ParameterStyle.BARE, use = SOAPBinding.Use.LITERAL)
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
-//@SchemaValidation
+@SchemaValidation
 public class BankService {
 
     @WebMethod(operationName = "register")
@@ -55,16 +55,16 @@ public class BankService {
 
     @WebMethod(operationName = "transfer")
     public void transfer(TransferRequest request) throws BankServiceException {
+        //String login = getLogin(request.getUuid());
         ServiceValidator.validate(request);
-        String login = getLogin(request.getUuid());
         try {
             if (Utils.getBankId(request.getTargetAccountNumber()).equals(App.THIS_BANK)) {
                 transferMoneyInternal(request);
             } else {
                 transferMoneyExternal(request);
             }
-        } catch (NoAccountException ex){
-            throw new BankServiceException(ex.getMessage(), BankServiceException.NO_ACCOUNT);
+        } catch (BankServiceException ex){
+            throw ex;
         }
     }
 

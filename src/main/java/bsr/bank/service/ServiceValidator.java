@@ -32,6 +32,8 @@ public class ServiceValidator {
         validateAccountNumber(request.getTargetAccountNumber());
         validateAmount(request.getSourceAccountNumber(), request.getAmount());
         validateTitle(request.getTitle());
+        if (request.getSourceAccountNumber().equals(request.getTargetAccountNumber()))
+            throwValidationEx("Source and target acc numbers are the same.");
     }
 
     private static void validateLogin(String login) throws BankServiceException {
@@ -56,7 +58,11 @@ public class ServiceValidator {
 
     private static void validateAccountNumber(String accNumber) throws BankServiceException {
         if (accNumber.isEmpty()) throwValidationEx("AccountNumber cannot be empty");
-        if (!Utils.checkNRB(accNumber)) throwValidationEx(accNumber + " is not correct PL account number.");
+        try {
+            if (!Utils.checkNRB(accNumber)) throwValidationEx(accNumber + " is not correct PL account number.");
+        } catch (IllegalArgumentException e){
+            throw new BankServiceException(e.getMessage(), BankServiceException.VALIDATION_ERROR);
+        }
     }
 
     private static void validateTitle(String title) throws BankServiceException {
@@ -66,6 +72,8 @@ public class ServiceValidator {
     private static void validateAmount(String accNumber, Integer amount) throws BankServiceException {
         if (amount <= 0 ) throwValidationEx("Amount must be greater than 0.");
         AccountMsg msg = AccountDAO.getInstance().get(new AccountMsg(accNumber));
+        if (msg.getId() == null)
+            throw new BankServiceException("Brak konta o podanym numerze.", BankServiceException.NO_ACCOUNT);
         if (amount > msg.getBalance())
             throwValidationEx("Not enough balance on your account.");
     }
