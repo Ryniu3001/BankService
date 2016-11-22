@@ -2,11 +2,8 @@ package bsr.bank.service;
 
 import bsr.bank.dao.AccountDAO;
 import bsr.bank.dao.message.AccountMsg;
-import bsr.bank.service.message.NewAccountRequest;
-import bsr.bank.service.message.TransferRequest;
+import bsr.bank.service.message.*;
 import bsr.bank.service.message.exception.BankServiceException;
-import bsr.bank.service.message.LoginRequest;
-import bsr.bank.service.message.RegisterRequest;
 
 public class ServiceValidator {
 
@@ -34,6 +31,12 @@ public class ServiceValidator {
         validateTitle(request.getTitle());
         if (request.getSourceAccountNumber().equals(request.getTargetAccountNumber()))
             throwValidationEx("Source and target acc numbers are the same.");
+    }
+
+    public static void validate(DepositMsg request) throws BankServiceException {
+        validateUuid(request.getUid());
+        validateAccountNumber(request.getAccountNumber());
+        validateAmount(request.getAccountNumber(), request.getAmount());
     }
 
     private static void validateLogin(String login) throws BankServiceException {

@@ -123,7 +123,7 @@ public class OperationDAO extends BaseDAO{
         }
     }
 
-    public synchronized void transfer(OperationMsg srcAccOp, OperationMsg targetAccOp) throws BankServiceException {
+    public synchronized void executeOperations(OperationMsg srcAccOp, OperationMsg targetAccOp) throws BankServiceException {
         Connection conn = getConnection();
         try {
             conn.setAutoCommit(false); //dla spójności
@@ -166,7 +166,7 @@ public class OperationDAO extends BaseDAO{
         }
     }
 
-    public void transfer(OperationMsg operation) throws BankServiceException {
+    public void executeOperation(OperationMsg operation) throws BankServiceException {
         Connection conn = getConnection();
         try {
             conn.setAutoCommit(false);

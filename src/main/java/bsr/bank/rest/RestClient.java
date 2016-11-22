@@ -45,7 +45,7 @@ public class RestClient {
             throw new BankServiceException("Brak definicji dla banku o ID: " + bankId, BankServiceException.VALIDATION_ERROR);
         System.out.println(bankId + ": " + bankIp);
         WebTarget target = client.target(bankIp);
-        Response response = target.path("transfer")
+        Response response = target.path("executeOperation")
                                 .request()
                                 .post(Entity.entity(new TransferExternalMsg(), MediaType.APPLICATION_JSON), Response.class);
 

@@ -1,7 +1,9 @@
 package bsr.bank.service;
 
 import bsr.bank.App;
+import bsr.bank.dao.AccountDAO;
 import bsr.bank.dao.UserDAO;
+import bsr.bank.dao.message.AccountMsg;
 import bsr.bank.dao.message.UserMsg;
 import bsr.bank.service.message.*;
 import bsr.bank.service.message.exception.BankServiceException;
@@ -11,6 +13,8 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.ws.BindingType;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static bsr.bank.service.Utils.transferMoneyExternal;
 import static bsr.bank.service.Utils.transferMoneyInternal;
@@ -37,7 +41,13 @@ public class BankService {
         if (user == null)
             throw new BankServiceException("Bad credentials.", BankServiceException.BAD_CREDENTIALS);
         String id = Utils.createUserSession(request.getLogin());
-        return new LoginResponse(id);
+        AccountMsg accountMsg = new AccountMsg();
+        accountMsg.setLogin(user.getLogin());
+        List<AccountMsg> accList =  AccountDAO.getInstance().getList(accountMsg);
+        List<AccountResponse> accResponseList = accList.stream()
+                                                        .map(Utils::AccountMsgToResponse)
+                                                        .collect(Collectors.toList());
+        return new LoginResponse(id, accResponseList);
     }
 
     @WebMethod(operationName = "logOut")
@@ -46,16 +56,16 @@ public class BankService {
     }
 
     @WebMethod(operationName = "createAccount")
-    public NewAccountResponse createAccout(NewAccountRequest request) throws BankServiceException {
+    public AccountResponse createAccout(NewAccountRequest request) throws BankServiceException {
         ServiceValidator.validate(request);
         String login = getLogin(request.getUid());
-        NewAccountResponse response = new NewAccountResponse(Utils.createNewAccountNumber(), 0, login);
+        AccountResponse response = new AccountResponse(Utils.createNewAccountNumber(), 0, login);
         return response;
     }
 
     @WebMethod(operationName = "transfer")
     public void transfer(TransferRequest request) throws BankServiceException {
-        //String login = getLogin(request.getUuid());
+        String login = getLogin(request.getUuid());
         ServiceValidator.validate(request);
         try {
             if (Utils.getBankId(request.getTargetAccountNumber()).equals(App.THIS_BANK)) {
@@ -66,6 +76,20 @@ public class BankService {
         } catch (BankServiceException ex){
             throw ex;
         }
+    }
+
+    @WebMethod(operationName = "deposit")
+    public void deposit(DepositMsg request) throws BankServiceException {
+        ServiceValidator.validate(request);
+        String login = getLogin(request.getUid());
+        Utils.deposit(request);
+    }
+
+    @WebMethod(operationName = "withdraw")
+    public void deposit(WithdrawMsg request) throws BankServiceException {
+        ServiceValidator.validate(request);
+        String login = getLogin(request.getUid());
+        Utils.withdraw(request);
     }
 
     private String getLogin(String uuid) throws BankServiceException {

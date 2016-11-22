@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class NewAccountResponse {
+public class AccountResponse {
 
     @XmlElement
     private String accNumber;
@@ -17,10 +17,10 @@ public class NewAccountResponse {
     @XmlElement
     private String userLogin;
 
-    public NewAccountResponse() {
+    public AccountResponse() {
     }
 
-    public NewAccountResponse(String accNumber, Integer balance, String userLogin) {
+    public AccountResponse(String accNumber, Integer balance, String userLogin) {
         this.accNumber = accNumber;
         this.balance = balance;
         this.userLogin = userLogin;

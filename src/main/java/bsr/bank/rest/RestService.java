@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class RestService {
     @POST
-    @Path("/transfer")
+    @Path("/executeOperation")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response transfer(TransferExternalMsg msg) {
@@ -33,6 +33,6 @@ public class RestService {
         operationMsg.setNrb(request.getSenderAccount());
         operationMsg.setType(OperationMsg.typeTransfer);
         operationMsg.setDate(System.currentTimeMillis() / 1000L);
-        OperationDAO.getInstance().transfer(operationMsg);
+        OperationDAO.getInstance().executeOperation(operationMsg);
     }
 }

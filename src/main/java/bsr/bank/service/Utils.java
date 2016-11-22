@@ -4,9 +4,12 @@ import bsr.bank.App;
 import bsr.bank.dao.AccountDAO;
 import bsr.bank.dao.OperationDAO;
 import bsr.bank.dao.UserDAO;
+import bsr.bank.dao.message.AccountMsg;
 import bsr.bank.dao.message.OperationMsg;
 import bsr.bank.dao.message.UserMsg;
 import bsr.bank.rest.RestClient;
+import bsr.bank.service.message.AccountResponse;
+import bsr.bank.service.message.DepositMsg;
 import bsr.bank.service.message.LoginRequest;
 import bsr.bank.service.message.TransferRequest;
 import bsr.bank.service.message.exception.BankServiceException;
@@ -109,7 +112,7 @@ public class Utils {
         operationMsg.setNrb(request.getTargetAccountNumber());
         operationMsg.setType(OperationMsg.typeTransfer);
         operationMsg.setDate(System.currentTimeMillis() / 1000L);
-        OperationDAO.getInstance().transfer(operationMsg);
+        OperationDAO.getInstance().executeOperation(operationMsg);
     }
 
     public static void transferMoneyInternal(TransferRequest request) throws BankServiceException {
@@ -128,6 +131,28 @@ public class Utils {
         targetAccOp.setNrb(request.getSourceAccountNumber());
         targetAccOp.setDate(System.currentTimeMillis() / 1000L);
 
-        OperationDAO.getInstance().transfer(srcAccOp, targetAccOp);
+        OperationDAO.getInstance().executeOperations(srcAccOp, targetAccOp);
+    }
+
+    public static void deposit(DepositMsg request) throws BankServiceException {
+        OperationMsg srcAccOp = new OperationMsg(request.getAccountNumber());
+        srcAccOp.setType(OperationMsg.typeDeposit);
+        srcAccOp.setAmount(request.getAmount());
+        srcAccOp.setDate(System.currentTimeMillis() / 1000L);
+
+        OperationDAO.getInstance().executeOperation(srcAccOp);
+    }
+
+    public static void withdraw(DepositMsg request) throws BankServiceException {
+        OperationMsg srcAccOp = new OperationMsg(request.getAccountNumber());
+        srcAccOp.setType(OperationMsg.typeWithdraw);
+        srcAccOp.setAmount(-request.getAmount());
+        srcAccOp.setDate(System.currentTimeMillis() / 1000L);
+
+        OperationDAO.getInstance().executeOperation(srcAccOp);
+    }
+
+    public static AccountResponse AccountMsgToResponse(AccountMsg msg){
+        return new AccountResponse(msg.getAccountNumber(), msg.getBalance(), msg.getLogin());
     }
 }

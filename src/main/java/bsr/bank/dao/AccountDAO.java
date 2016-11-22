@@ -11,14 +11,13 @@ import java.util.List;
 
 public class AccountDAO extends BaseDAO {
     private static AccountDAO instance;
-    private final static String INSERT_ACCOUNT = "INSERT INTO ACCOUNT (number, balance, userId) " +
+    private final static String INSERT_ACCOUNT = "INSERT INTO ACCOUNT (number, balance, login) " +
             "VALUES (?, ?, ?)";
     private final static String GET_ACCOUNT = "SELECT * FROM ACCOUNT WHERE NUMBER = ?";
     private final static String GET_ACCOUNT_LIST = "SELECT * FROM ACCOUNT WHERE 1=1";
     private final static String DELETE_ACCOUNT = "DELETE FROM ACCOUNT WHERE NUMBER = ?";
     private final static String SELECT_MAX_ID = "SELECT MAX(ID) AS MAXID FROM ACCOUNT";
     private final static String UPDATE_ACCOUNT = "UPDATE ACCOUNT SET balance = ? WHERE number = ?";
-
 
     private AccountDAO(){}
 
@@ -41,7 +40,7 @@ public class AccountDAO extends BaseDAO {
             int idx = 1;
             stmt.setString(idx++, msg.getAccountNumber());
             stmt.setInt(idx++, msg.getBalance());
-            stmt.setInt(idx++, msg.getUserId());
+            stmt.setString(idx++, msg.getLogin());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -101,8 +100,8 @@ public class AccountDAO extends BaseDAO {
         List<AccountMsg> accountList = new ArrayList<>();
         try {
             String query = GET_ACCOUNT_LIST;
-            if (msg.getUserId() != null)
-                query += " AND userId = " + msg.getUserId().intValue();
+            if (msg.getLogin() != null)
+                query += " AND login = " + msg.getLogin();
             stmt = conn.prepareStatement(query);
             rs = stmt.executeQuery();
             while ( rs.next() ) {
@@ -164,7 +163,7 @@ public class AccountDAO extends BaseDAO {
         msg.setId(rs.getInt("id"));
         msg.setAccountNumber(rs.getString("number"));
         msg.setBalance(rs.getInt("balance"));
-        msg.setUserId(rs.getInt("userId"));
+        msg.setLogin(rs.getString("login"));
         return msg;
     }
 }

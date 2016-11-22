@@ -4,10 +4,11 @@ public class AccountMsg {
     private Integer id;
     private String accountNumber;
     private Integer balance;
-    private Integer userId;
+    private String login;
 
     public AccountMsg() {
     }
+
 
     public AccountMsg(String accountNumber) {
         this.accountNumber = accountNumber;
@@ -44,11 +45,11 @@ public class AccountMsg {
         this.balance += amount;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getLogin() {
+        return login;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setLogin(String login) {
+        this.login = login;
     }
 }
