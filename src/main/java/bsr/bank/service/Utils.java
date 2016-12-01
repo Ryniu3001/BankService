@@ -47,7 +47,7 @@ public class Utils {
 
     public static UserMsg validateCredentials(LoginRequest request){
         UserMsg user = UserDAO.getInstance().get(new UserMsg(request));
-        if (user != null && user.getPassword().equals(request.getPassword()))
+        if (user.getId() != null && user.getPassword().equals(request.getPassword()))
             return user;
         return null;
     }

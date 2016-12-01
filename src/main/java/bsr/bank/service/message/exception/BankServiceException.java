@@ -36,7 +36,7 @@ public class BankServiceException extends Exception {
     }
 
     public BankServiceException(String faultBeanMessage, Integer faultCode) {
-        super("Exception");
+        super(faultBeanMessage);
         this.faultBean = new FaultBean();
         this.faultBean.setDetails(faultBeanMessage);
         this.faultBean.setCode(faultCode);

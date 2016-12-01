@@ -10,6 +10,7 @@ import bsr.bank.service.message.exception.BankServiceException;
 import com.sun.xml.ws.developer.SchemaValidation;
 
 import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.ws.BindingType;
@@ -26,7 +27,7 @@ import static bsr.bank.service.Utils.transferMoneyInternal;
 public class BankService {
 
     @WebMethod(operationName = "register")
-    public void register(RegisterRequest request) throws BankServiceException{
+    public void register(@WebParam(name = "registerRequest", partName = "payload") RegisterRequest request) throws BankServiceException{
         ServiceValidator.validate(request);
         UserMsg userMsg = UserDAO.getInstance().get(new UserMsg(request));
         if (userMsg.getId() != null)
@@ -35,7 +36,7 @@ public class BankService {
     }
 
     @WebMethod(operationName = "logIn")
-    public LoginResponse logIn(LoginRequest request) throws BankServiceException {
+    public LoginResponse logIn(@WebParam(name = "loginRequest", partName = "payload") LoginRequest request) throws BankServiceException {
         ServiceValidator.validate(request);
         UserMsg user = Utils.validateCredentials(request);
         if (user == null)
@@ -51,12 +52,12 @@ public class BankService {
     }
 
     @WebMethod(operationName = "logOut")
-    public void logOut(LogOutRequest request) throws BankServiceException {
+    public void logOut(@WebParam(name = "logOutRequest", partName = "payload") LogOutRequest request) throws BankServiceException {
         Utils.removeSession(request.getUid());
     }
 
     @WebMethod(operationName = "createAccount")
-    public AccountResponse createAccout(NewAccountRequest request) throws BankServiceException {
+    public AccountResponse createAccout(@WebParam(name = "newAccountRequest", partName = "payload") NewAccountRequest request) throws BankServiceException {
         ServiceValidator.validate(request);
         String login = getLogin(request.getUid());
         AccountResponse response = new AccountResponse(Utils.createNewAccountNumber(), 0, login);
@@ -64,7 +65,7 @@ public class BankService {
     }
 
     @WebMethod(operationName = "transfer")
-    public void transfer(TransferRequest request) throws BankServiceException {
+    public void transfer(@WebParam(name = "transferRequest", partName = "payload") TransferRequest request) throws BankServiceException {
         String login = getLogin(request.getUuid());
         ServiceValidator.validate(request);
         try {
@@ -79,14 +80,14 @@ public class BankService {
     }
 
     @WebMethod(operationName = "deposit")
-    public void deposit(DepositMsg request) throws BankServiceException {
+    public void deposit(@WebParam(name = "depositRequest", partName = "payload") DepositMsg request) throws BankServiceException {
         ServiceValidator.validate(request);
         String login = getLogin(request.getUid());
         Utils.deposit(request);
     }
 
     @WebMethod(operationName = "withdraw")
-    public void deposit(WithdrawMsg request) throws BankServiceException {
+    public void deposit(@WebParam(name = "withdrawRequest", partName = "payload") WithdrawMsg request) throws BankServiceException {
         ServiceValidator.validate(request);
         String login = getLogin(request.getUid());
         Utils.withdraw(request);
