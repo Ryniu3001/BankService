@@ -101,8 +101,10 @@ public class AccountDAO extends BaseDAO {
         try {
             String query = GET_ACCOUNT_LIST;
             if (msg.getLogin() != null)
-                query += " AND login = " + msg.getLogin();
+                query += " AND login = ?" ;
             stmt = conn.prepareStatement(query);
+            if (msg.getLogin() != null)
+                stmt.setString(1, msg.getLogin());
             rs = stmt.executeQuery();
             while ( rs.next() ) {
                 accountList.add(populateMsg(rs));

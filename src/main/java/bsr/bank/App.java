@@ -17,6 +17,7 @@ public class App extends Application{
     public static String THIS_BANK = "00109711";
     public static void main(String[] args) throws IOException {
 
+
 /*        HttpServer httpServer = new HttpServer();
         NetworkListener networkListener = new NetworkListener("jaxws-listener", "127.0.0.1", 8088);
 
@@ -28,6 +29,7 @@ public class App extends Application{
         System.in.read();
         httpServer.shutdown();*/
 
+
         URI baseUri = UriBuilder.fromUri("http://localhost/").port(8088).build();
         ResourceConfig config = new ResourceConfig().packages("bsr.bank.rest");
         HttpServer httpServer = GrizzlyHttpServerFactory.createHttpServer(baseUri, config);
@@ -38,6 +40,7 @@ public class App extends Application{
         httpServer.addListener(networkListener);
 
         httpServer.start();
+
 
     }
 }

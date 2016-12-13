@@ -5,25 +5,20 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AccountResponse {
-
+public class DepositResponse {
     @XmlElement
     private String accNumber;
     @XmlElement
     private Integer balance;
-    @XmlElement
-    private String userLogin;
 
-    public AccountResponse() {
+    public DepositResponse() {
     }
 
-    public AccountResponse(String accNumber, Integer balance, String userLogin) {
+    public DepositResponse(String accNumber, Integer balance) {
         this.accNumber = accNumber;
         this.balance = balance;
-        this.userLogin = userLogin;
     }
 
     public String getAccNumber() {
@@ -41,14 +36,4 @@ public class AccountResponse {
     public void setBalance(Integer balance) {
         this.balance = balance;
     }
-
-    public String getUserLogin() {
-        return userLogin;
-    }
-
-    public void setUserLogin(String userLogin) {
-        this.userLogin = userLogin;
-    }
-
-
 }

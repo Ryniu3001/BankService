@@ -7,6 +7,7 @@ public class AccountMsg {
     private String login;
 
     public AccountMsg() {
+        this.balance = 0;
     }
 
 

@@ -15,15 +15,24 @@ public class LoginResponse {
         this.uid = id;
     }
 
-    public LoginResponse(String uid, List<AccountResponse> accountList) {
+    public LoginResponse(String uid, List<AccountResponse> accountList, String name, String surname) {
         this.uid = uid;
         this.accountList = accountList;
+        this.name = name;
+        this.surname = surname;
     }
 
     @XmlElement(required = true)
     private String uid;
 
+    @XmlElement(required = false)
     private List<AccountResponse> accountList;
+
+    @XmlElement(required = true)
+    private String name;
+
+    @XmlElement(required = true)
+    private String surname;
 
     public String getUid() {
         return uid;
@@ -39,5 +48,21 @@ public class LoginResponse {
 
     public void setAccountList(List<AccountResponse> accountList) {
         this.accountList = accountList;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 }

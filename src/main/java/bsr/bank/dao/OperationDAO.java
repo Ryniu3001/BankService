@@ -42,6 +42,7 @@ public class OperationDAO extends BaseDAO{
             connProvided = true;
         try {
             stmt = conn.prepareStatement(INSERT_OPERATION);
+
             int idx = 1;
             stmt.setString(idx++, msg.getTitle());
             stmt.setInt(idx++, msg.getType());
@@ -166,7 +167,7 @@ public class OperationDAO extends BaseDAO{
         }
     }
 
-    public void executeOperation(OperationMsg operation) throws BankServiceException {
+    public OperationMsg executeOperation(OperationMsg operation) throws BankServiceException {
         Connection conn = getConnection();
         try {
             conn.setAutoCommit(false);
@@ -187,11 +188,14 @@ public class OperationDAO extends BaseDAO{
             this.create(operation, conn);
 
             conn.commit();
+
+            return operation;
         } catch (BankServiceException ex){
             throw ex;
         } catch (Exception e) {
             try { conn.rollback(); } catch (SQLException e1) { e1.printStackTrace(); }
             e.printStackTrace();
+            throw new BankServiceException("Unexpected server exception", BankServiceException.UNEXPECTED);
         }finally {
             closeConn(conn);
         }

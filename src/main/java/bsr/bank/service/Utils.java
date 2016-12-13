@@ -8,10 +8,7 @@ import bsr.bank.dao.message.AccountMsg;
 import bsr.bank.dao.message.OperationMsg;
 import bsr.bank.dao.message.UserMsg;
 import bsr.bank.rest.RestClient;
-import bsr.bank.service.message.AccountResponse;
-import bsr.bank.service.message.DepositMsg;
-import bsr.bank.service.message.LoginRequest;
-import bsr.bank.service.message.TransferRequest;
+import bsr.bank.service.message.*;
 import bsr.bank.service.message.exception.BankServiceException;
 
 import java.math.BigInteger;
@@ -54,7 +51,7 @@ public class Utils {
 
     public static String createNewAccountNumber(){
         Integer maxId = AccountDAO.getInstance().getMaxId();
-        StringBuffer sb = new StringBuffer(maxId);
+        StringBuffer sb = new StringBuffer(maxId.toString());
         while (sb.length() != 16)
             sb.insert(0, "0");
         String accNumber = App.THIS_BANK + sb;
@@ -134,22 +131,26 @@ public class Utils {
         OperationDAO.getInstance().executeOperations(srcAccOp, targetAccOp);
     }
 
-    public static void deposit(DepositMsg request) throws BankServiceException {
+    public static DepositResponse deposit(DepositMsg request) throws BankServiceException {
         OperationMsg srcAccOp = new OperationMsg(request.getAccountNumber());
         srcAccOp.setType(OperationMsg.typeDeposit);
         srcAccOp.setAmount(request.getAmount());
         srcAccOp.setDate(System.currentTimeMillis() / 1000L);
+        srcAccOp.setTitle("Wpłata środków");
 
-        OperationDAO.getInstance().executeOperation(srcAccOp);
+        srcAccOp = OperationDAO.getInstance().executeOperation(srcAccOp);
+        return new DepositResponse(srcAccOp.getAccountNumber(), srcAccOp.getBalance());
     }
 
-    public static void withdraw(DepositMsg request) throws BankServiceException {
+    public static WithdrawResponse withdraw(DepositMsg request) throws BankServiceException {
         OperationMsg srcAccOp = new OperationMsg(request.getAccountNumber());
         srcAccOp.setType(OperationMsg.typeWithdraw);
         srcAccOp.setAmount(-request.getAmount());
         srcAccOp.setDate(System.currentTimeMillis() / 1000L);
+        srcAccOp.setTitle("Wypłata środków");
 
-        OperationDAO.getInstance().executeOperation(srcAccOp);
+        srcAccOp = OperationDAO.getInstance().executeOperation(srcAccOp);
+        return new WithdrawResponse(srcAccOp.getAccountNumber(), srcAccOp.getBalance());
     }
 
     public static AccountResponse AccountMsgToResponse(AccountMsg msg){

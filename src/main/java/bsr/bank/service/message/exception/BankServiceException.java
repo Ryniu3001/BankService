@@ -9,6 +9,7 @@ public class BankServiceException extends Exception {
     public static final int BAD_CREDENTIALS = 2;
     public static final int VALIDATION_ERROR = 3;
     public static final int NO_ACCOUNT = 4;
+    public static final int UNEXPECTED = 5;
 
     private FaultBean faultBean;
 

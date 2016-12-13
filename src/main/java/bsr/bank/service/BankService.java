@@ -7,7 +7,6 @@ import bsr.bank.dao.message.AccountMsg;
 import bsr.bank.dao.message.UserMsg;
 import bsr.bank.service.message.*;
 import bsr.bank.service.message.exception.BankServiceException;
-import com.sun.xml.ws.developer.SchemaValidation;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -23,7 +22,7 @@ import static bsr.bank.service.Utils.transferMoneyInternal;
 @WebService(name = "BankPortType", portName = "BankPort", serviceName = "BankService", targetNamespace = "http://bsr.bank.pl")
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, parameterStyle = SOAPBinding.ParameterStyle.BARE, use = SOAPBinding.Use.LITERAL)
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
-@SchemaValidation
+//@SchemaValidation
 public class BankService {
 
     @WebMethod(operationName = "register")
@@ -31,7 +30,7 @@ public class BankService {
         ServiceValidator.validate(request);
         UserMsg userMsg = UserDAO.getInstance().get(new UserMsg(request));
         if (userMsg.getId() != null)
-            throw new BankServiceException("User with specified login already exists.");
+            throw new BankServiceException("User with specified login already exists.", BankServiceException.BAD_CREDENTIALS);
         UserDAO.getInstance().create(new UserMsg(request));
     }
 
@@ -48,7 +47,7 @@ public class BankService {
         List<AccountResponse> accResponseList = accList.stream()
                                                         .map(Utils::AccountMsgToResponse)
                                                         .collect(Collectors.toList());
-        return new LoginResponse(id, accResponseList);
+        return new LoginResponse(id, accResponseList, user.getName(), user.getSurname());
     }
 
     @WebMethod(operationName = "logOut")
@@ -61,6 +60,10 @@ public class BankService {
         ServiceValidator.validate(request);
         String login = getLogin(request.getUid());
         AccountResponse response = new AccountResponse(Utils.createNewAccountNumber(), 0, login);
+        AccountMsg msg = new AccountMsg();
+        msg.setAccountNumber(response.getAccNumber());
+        msg.setLogin(login);
+        AccountDAO.getInstance().create(msg);
         return response;
     }
 
@@ -80,17 +83,17 @@ public class BankService {
     }
 
     @WebMethod(operationName = "deposit")
-    public void deposit(@WebParam(name = "depositRequest", partName = "payload") DepositMsg request) throws BankServiceException {
+    public DepositResponse deposit(@WebParam(name = "depositRequest", partName = "payload") DepositMsg request) throws BankServiceException {
         ServiceValidator.validate(request);
         String login = getLogin(request.getUid());
-        Utils.deposit(request);
+        return Utils.deposit(request);
     }
 
     @WebMethod(operationName = "withdraw")
-    public void deposit(@WebParam(name = "withdrawRequest", partName = "payload") WithdrawMsg request) throws BankServiceException {
+    public WithdrawResponse withdraw(@WebParam(name = "withdrawRequest", partName = "payload") WithdrawMsg request) throws BankServiceException {
         ServiceValidator.validate(request);
         String login = getLogin(request.getUid());
-        Utils.withdraw(request);
+        return Utils.withdraw(request);
     }
 
     private String getLogin(String uuid) throws BankServiceException {

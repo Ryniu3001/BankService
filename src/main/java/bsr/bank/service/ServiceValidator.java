@@ -36,7 +36,7 @@ public class ServiceValidator {
     public static void validate(DepositMsg request) throws BankServiceException {
         validateUuid(request.getUid());
         validateAccountNumber(request.getAccountNumber());
-        validateAmount(request.getAccountNumber(), request.getAmount());
+        //validateAmount(request.getAccountNumber(), request.getAmount());
     }
 
     private static void validateLogin(String login) throws BankServiceException {
