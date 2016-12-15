@@ -68,14 +68,15 @@ public class BankService {
     }
 
     @WebMethod(operationName = "transfer")
-    public void transfer(@WebParam(name = "transferRequest", partName = "payload") TransferRequest request) throws BankServiceException {
-        String login = getLogin(request.getUuid());
-        ServiceValidator.validate(request);
+    public TransferResponse transfer(@WebParam(name = "transferRequest", partName = "payload") TransferRequest request) throws BankServiceException {
+        //String login = getLogin(request.getUuid());
+        //ServiceValidator.validate(request);
         try {
-            if (Utils.getBankId(request.getTargetAccountNumber()).equals(App.THIS_BANK)) {
-                transferMoneyInternal(request);
+            String bankId = Utils.getBankId(request.getTargetAccountNumber());
+            if (bankId.equals(App.THIS_BANK)) {
+                return transferMoneyInternal(request);
             } else {
-                transferMoneyExternal(request);
+                return transferMoneyExternal(request, bankId);
             }
         } catch (BankServiceException ex){
             throw ex;

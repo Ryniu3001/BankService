@@ -124,7 +124,7 @@ public class OperationDAO extends BaseDAO{
         }
     }
 
-    public synchronized void executeOperations(OperationMsg srcAccOp, OperationMsg targetAccOp) throws BankServiceException {
+    public synchronized OperationMsg executeOperations(OperationMsg srcAccOp, OperationMsg targetAccOp) throws BankServiceException {
         Connection conn = getConnection();
         try {
             conn.setAutoCommit(false); //dla spójności
@@ -153,6 +153,7 @@ public class OperationDAO extends BaseDAO{
             this.create(targetAccOp, conn);
 
             conn.commit();
+            return srcAccOp;
         } catch (BankServiceException ex){
             throw ex;
         } catch (Exception e) {
@@ -162,6 +163,7 @@ public class OperationDAO extends BaseDAO{
                 e1.printStackTrace();
             }
             e.printStackTrace();
+            throw new BankServiceException("Unexpected", BankServiceException.UNEXPECTED);
         } finally {
             closeConn(conn);
         }

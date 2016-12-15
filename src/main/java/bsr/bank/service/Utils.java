@@ -99,9 +99,9 @@ public class Utils {
         return false;
     }
 
-    public static void transferMoneyExternal(TransferRequest request) throws BankServiceException {
+    public static TransferResponse transferMoneyExternal(TransferRequest request, String bankId) throws BankServiceException {
 
-        RestClient.invokeTransfer(request);
+        RestClient.invokeTransfer(request, bankId);
 
         OperationMsg operationMsg = new OperationMsg(request.getSourceAccountNumber());
         operationMsg.setTitle(request.getTitle());
@@ -109,10 +109,11 @@ public class Utils {
         operationMsg.setNrb(request.getTargetAccountNumber());
         operationMsg.setType(OperationMsg.typeTransfer);
         operationMsg.setDate(System.currentTimeMillis() / 1000L);
-        OperationDAO.getInstance().executeOperation(operationMsg);
+        operationMsg = OperationDAO.getInstance().executeOperation(operationMsg);
+        return new TransferResponse(operationMsg.getAccountNumber(), operationMsg.getBalance());
     }
 
-    public static void transferMoneyInternal(TransferRequest request) throws BankServiceException {
+    public static TransferResponse transferMoneyInternal(TransferRequest request) throws BankServiceException {
 
         OperationMsg srcAccOp = new OperationMsg(request.getSourceAccountNumber());
         srcAccOp.setType(OperationMsg.typeTransfer);
@@ -128,7 +129,9 @@ public class Utils {
         targetAccOp.setNrb(request.getSourceAccountNumber());
         targetAccOp.setDate(System.currentTimeMillis() / 1000L);
 
-        OperationDAO.getInstance().executeOperations(srcAccOp, targetAccOp);
+        srcAccOp = OperationDAO.getInstance().executeOperations(srcAccOp, targetAccOp);
+
+        return new TransferResponse(srcAccOp.getAccountNumber(), srcAccOp.getBalance());
     }
 
     public static DepositResponse deposit(DepositMsg request) throws BankServiceException {

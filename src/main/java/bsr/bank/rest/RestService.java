@@ -14,11 +14,13 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class RestService {
     @POST
-    @Path("/executeOperation")
+    @Path("/transfer")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response transfer(TransferExternalMsg msg) {
         try {
+            if (!validate(msg))
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMsg("Bad request")).build();
             transferMoneyExternal(msg);
         } catch (BankServiceException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorMsg(e.getFaultInfo().getDetails())).build();
@@ -34,5 +36,21 @@ public class RestService {
         operationMsg.setType(OperationMsg.typeTransfer);
         operationMsg.setDate(System.currentTimeMillis() / 1000L);
         OperationDAO.getInstance().executeOperation(operationMsg);
+    }
+
+    private boolean validate(TransferExternalMsg msg){
+        if (nullOrEmpty(msg.getReceiverAccount())
+                || nullOrEmpty(msg.getSenderAccount())
+                || nullOrEmpty(msg.getTitle())
+                || msg.getAmount() == null){
+            return false;
+        }
+        return true;
+    }
+
+    private boolean nullOrEmpty(String str){
+        if (str != null && !str.isEmpty())
+            return false;
+        return true;
     }
 }
