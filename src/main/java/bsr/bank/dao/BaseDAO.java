@@ -54,15 +54,16 @@ public abstract class BaseDAO {
     }
 
     public boolean createTables(){
-        String createUser = "CREATE TABLE User (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "name STRING (30) NOT NULL, surname  STRING (40) NOT NULL, " +
-                "login STRING (50) NOT NULL UNIQUE, password STRING (50) NOT NULL);";
-        String createAccount = "CREATE TABLE Account (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                " number STRING (30) NOT NULL UNIQUE, balance DECIMAL NOT NULL, " +
-                " userId INTEGER CONSTRAINT account_user_fk REFERENCES User (id) ON DELETE CASCADE);";
-        String createOperation = "CREATE TABLE Operation (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "title STRING (200) NOT NULL, type INTEGER (1) NOT NULL, amount DECIMAL NOT NULL, sourceIban INTEGER NOT NULL, " +
-                "balance DECIMAL NOT NULL, accountNumber STRING(30) NOT NULL CONSTRAINT operation_account_fk REFERENCES Account (number) ON DELETE CASCADE);";
+        String createUser = "CREATE TABLE IF NOT EXISTS User (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "name TEXT (30) NOT NULL, surname  TEXT (40) NOT NULL, " +
+                "login TEXT (50) NOT NULL UNIQUE, password TEXT (50) NOT NULL);";
+        String createAccount = "CREATE TABLE IF NOT EXISTS Account (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " number TEXT (30) NOT NULL UNIQUE, balance DECIMAL NOT NULL, " +
+                " login TEXT CONSTRAINT account_user_fk REFERENCES User (login) ON DELETE CASCADE);";
+        String createOperation = "CREATE TABLE IF NOT EXISTS Operation (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "title TEXT (200) NOT NULL, type INTEGER (1) NOT NULL, amount DECIMAL NOT NULL, nrb TEXT, " +
+                "balance DECIMAL NOT NULL, accountNumber TEXT(30) NOT NULL CONSTRAINT operation_account_fk REFERENCES Account (number) ON DELETE CASCADE," +
+                " DATE INTEGER);";
         Statement stat = null;
         Connection conn = null;
         try {

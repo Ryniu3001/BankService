@@ -1,6 +1,10 @@
 package bsr.bank.dao.message;
 
 
+import bsr.bank.service.message.Operation;
+
+import java.util.Date;
+
 public class OperationMsg {
 
     public static final int typeTransfer = 0;
@@ -86,5 +90,16 @@ public class OperationMsg {
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public Operation toOperationDTO(){
+        Operation operation = new Operation();
+        operation.setBalance(this.balance);
+        operation.setAmount(this.amount);
+        operation.setTitle(this.title);
+        operation.setDate(new Date(this.date));
+        operation.setSourceNrb(this.nrb);
+        operation.setType(OperationEnum.fromValue(this.type.intValue()).name());
+        return operation;
     }
 }

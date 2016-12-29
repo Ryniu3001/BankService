@@ -14,7 +14,7 @@ public class OperationDAO extends BaseDAO{
     private final static String INSERT_OPERATION = "INSERT INTO OPERATION (title, type, amount, NRB, balance, accountNumber, date) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
     private final static String GET_OPERATION = "SELECT * FROM OPERATION WHERE ID = ?";
-    private final static String GET_OPERATION_LIST = "SELECT * FROM OPERATION WHERE accountNumber = ?";
+    private final static String GET_OPERATION_LIST = "SELECT * FROM OPERATION WHERE accountNumber = ? ORDER BY DATE";
     private final static String DELETE_OPERATION = "DELETE FROM OPERATION WHERE ID = ?";
 
     private final static String UPDATE_ACCOUNT = "UPDATE ACCOUNT SET balance = ? + (select balance from ACCOUNT WHERE number = ?) WHERE number = ?";
@@ -207,12 +207,13 @@ public class OperationDAO extends BaseDAO{
     private OperationMsg populateMsg(ResultSet rs) throws SQLException {
         OperationMsg msg = new OperationMsg();
         msg.setId(rs.getInt("id"));
-        msg.setAccountNumber(rs.getString("number"));
+        msg.setAccountNumber(rs.getString("accountNumber"));
         msg.setBalance(rs.getInt("balance"));
         msg.setAmount(rs.getInt("amount"));
         msg.setTitle(rs.getString("title"));
-        msg.setNrb(rs.getString("sourceIban"));
-        msg.setType(rs.getInt(rs.getInt("type")));
+        msg.setNrb(rs.getString("nrb"));
+        msg.setType(rs.getInt("type"));
+        msg.setDate(rs.getLong("date"));
         return msg;
     }
 }

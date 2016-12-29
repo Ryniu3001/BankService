@@ -1,6 +1,7 @@
 package bsr.bank.rest;
 
 import bsr.bank.dao.OperationDAO;
+import bsr.bank.dao.message.OperationEnum;
 import bsr.bank.dao.message.OperationMsg;
 import bsr.bank.service.message.exception.BankServiceException;
 
@@ -33,8 +34,8 @@ public class RestService {
         operationMsg.setTitle(request.getTitle());
         operationMsg.setAmount(request.getAmount());
         operationMsg.setNrb(request.getSenderAccount());
-        operationMsg.setType(OperationMsg.typeTransfer);
-        operationMsg.setDate(System.currentTimeMillis() / 1000L);
+        operationMsg.setType(OperationEnum.przelew.getValue());
+        operationMsg.setDate(System.currentTimeMillis());
         OperationDAO.getInstance().executeOperation(operationMsg);
     }
 

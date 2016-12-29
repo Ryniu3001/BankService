@@ -1,5 +1,6 @@
 package bsr.bank;
 
+import bsr.bank.dao.AccountDAO;
 import bsr.bank.rest.AuthenticationFilter;
 import bsr.bank.service.BankService;
 import org.glassfish.grizzly.http.server.HttpHandler;
@@ -15,9 +16,11 @@ import java.io.IOException;
 import java.net.URI;
 
 public class App extends Application{
-    public static String THIS_BANK = "001097116";
+    public static String THIS_BANK = "00109711";
 
     public static void main(String[] args) throws IOException {
+
+        System.out.println("Inicializacja bazy: " + AccountDAO.getInstance().createTables());
 
         URI baseUri = UriBuilder.fromUri("http://localhost/").port(8088).build();
         ResourceConfig config = new ResourceConfig().packages("bsr.bank.rest");

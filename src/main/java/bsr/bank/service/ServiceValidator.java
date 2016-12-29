@@ -23,6 +23,11 @@ public class ServiceValidator {
         validateUuid(request.getUid());
     }
 
+    public static void validate(GetHistoryRequest request) throws BankServiceException {
+        validateUuid(request.getUid());
+        validateAccountNumber(request.getAccountNumber());
+    }
+
     public static void validate(TransferRequest request) throws BankServiceException {
         validateUuid(request.getUuid());
         validateAccountNumber(request.getSourceAccountNumber());
@@ -55,8 +60,16 @@ public class ServiceValidator {
         if (surname.isEmpty()) throwValidationEx("surname cannot be empty");
     }
 
-    private static void validateUuid(String uuid) throws BankServiceException {
+    public static void validateUuid(String uuid) throws BankServiceException {
         if (uuid.isEmpty()) throwValidationEx("Session id cannot be empty");
+    }
+
+    public static void validateIfAccountBelongsToLogin(String login, String accNrb) throws BankServiceException {
+        AccountMsg msg = new AccountMsg();
+        msg.setAccountNumber(accNrb);
+        msg = AccountDAO.getInstance().get(msg);
+        if (!msg.getLogin().equals(login))
+            throwValidationEx("This account doesn't belong to you.");
     }
 
     private static void validateAccountNumber(String accNumber) throws BankServiceException {

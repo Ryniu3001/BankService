@@ -2,8 +2,10 @@ package bsr.bank.service;
 
 import bsr.bank.App;
 import bsr.bank.dao.AccountDAO;
+import bsr.bank.dao.OperationDAO;
 import bsr.bank.dao.UserDAO;
 import bsr.bank.dao.message.AccountMsg;
+import bsr.bank.dao.message.OperationMsg;
 import bsr.bank.dao.message.UserMsg;
 import bsr.bank.service.message.*;
 import bsr.bank.service.message.exception.BankServiceException;
@@ -41,9 +43,7 @@ public class BankService {
         if (user == null)
             throw new BankServiceException("Bad credentials.", BankServiceException.BAD_CREDENTIALS);
         String id = Utils.createUserSession(request.getLogin());
-        AccountMsg accountMsg = new AccountMsg();
-        accountMsg.setLogin(user.getLogin());
-        List<AccountMsg> accList =  AccountDAO.getInstance().getList(accountMsg);
+        List<AccountMsg> accList = getAccountList(request.getLogin());
         List<AccountResponse> accResponseList = accList.stream()
                                                         .map(Utils::AccountMsgToResponse)
                                                         .collect(Collectors.toList());
@@ -69,8 +69,8 @@ public class BankService {
 
     @WebMethod(operationName = "transfer")
     public TransferResponse transfer(@WebParam(name = "transferRequest", partName = "payload") TransferRequest request) throws BankServiceException {
-        //String login = getLogin(request.getUuid());
-        //ServiceValidator.validate(request);
+        String login = getLogin(request.getUuid());
+        ServiceValidator.validate(request);
         try {
             String bankId = Utils.getBankId(request.getTargetAccountNumber());
             if (bankId.equals(App.THIS_BANK)) {
@@ -97,6 +97,36 @@ public class BankService {
         return Utils.withdraw(request);
     }
 
+    @WebMethod(operationName = "getAccounts")
+    public GetAccountsResponse getAccounts(@WebParam(name = "getAccountsRequest", partName = "payload")String uuid) throws BankServiceException {
+        ServiceValidator.validateUuid(uuid);
+        String login = getLogin(uuid);
+        List<AccountMsg> accounts = getAccountList(login);
+        List<AccountResponse> accResponseList = accounts.stream()
+                .map(Utils::AccountMsgToResponse)
+                .collect(Collectors.toList());
+        return new GetAccountsResponse(accResponseList);
+    }
+
+    @WebMethod(operationName = "getHistory")
+    public GetHistoryResponse getHistory(@WebParam(name = "getHistoryRequest", partName = "payload")GetHistoryRequest request) throws BankServiceException {
+        ServiceValidator.validate(request);
+        String login = getLogin(request.getUid());
+        ServiceValidator.validateIfAccountBelongsToLogin(login, request.getAccountNumber());
+        OperationMsg msg = new OperationMsg();
+        msg.setAccountNumber(request.getAccountNumber());
+        List<OperationMsg> operationMsgList = OperationDAO.getInstance().getList(msg);
+        List<Operation> operations = operationMsgList.stream().map(operationMsg -> operationMsg.toOperationDTO()).collect(Collectors.toList());
+
+        return new GetHistoryResponse(operations);
+    }
+
+    private List<AccountMsg> getAccountList(String login){
+        AccountMsg accountMsg = new AccountMsg();
+        accountMsg.setLogin(login);
+        List<AccountMsg> accList =  AccountDAO.getInstance().getList(accountMsg);
+        return accList;
+    }
     private String getLogin(String uuid) throws BankServiceException {
         String login = Utils.getUserLoginFromSession(uuid);
         if (login == null)

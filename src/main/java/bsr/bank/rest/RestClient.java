@@ -50,7 +50,7 @@ public class RestClient {
         externalMsg.setTitle(request.getTitle());
         externalMsg.setAmount(request.getAmount());
         externalMsg.setReceiverAccount(request.getTargetAccountNumber());
-        externalMsg.setSenderAccount(request.getTargetAccountNumber());
+        externalMsg.setSenderAccount(request.getSourceAccountNumber());
         return externalMsg;
     }
 }

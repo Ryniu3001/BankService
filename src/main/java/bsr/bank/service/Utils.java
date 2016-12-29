@@ -5,6 +5,7 @@ import bsr.bank.dao.AccountDAO;
 import bsr.bank.dao.OperationDAO;
 import bsr.bank.dao.UserDAO;
 import bsr.bank.dao.message.AccountMsg;
+import bsr.bank.dao.message.OperationEnum;
 import bsr.bank.dao.message.OperationMsg;
 import bsr.bank.dao.message.UserMsg;
 import bsr.bank.rest.RestClient;
@@ -107,8 +108,8 @@ public class Utils {
         operationMsg.setTitle(request.getTitle());
         operationMsg.setAmount(-request.getAmount());
         operationMsg.setNrb(request.getTargetAccountNumber());
-        operationMsg.setType(OperationMsg.typeTransfer);
-        operationMsg.setDate(System.currentTimeMillis() / 1000L);
+        operationMsg.setType(OperationEnum.przelew.getValue());
+        operationMsg.setDate(System.currentTimeMillis());
         operationMsg = OperationDAO.getInstance().executeOperation(operationMsg);
         return new TransferResponse(operationMsg.getAccountNumber(), operationMsg.getBalance());
     }
@@ -116,18 +117,18 @@ public class Utils {
     public static TransferResponse transferMoneyInternal(TransferRequest request) throws BankServiceException {
 
         OperationMsg srcAccOp = new OperationMsg(request.getSourceAccountNumber());
-        srcAccOp.setType(OperationMsg.typeTransfer);
+        srcAccOp.setType(OperationEnum.przelew.getValue());
         srcAccOp.setAmount(0 - request.getAmount());
         srcAccOp.setTitle(request.getTitle());
         srcAccOp.setNrb(request.getTargetAccountNumber());
-        srcAccOp.setDate(System.currentTimeMillis() / 1000L);
+        srcAccOp.setDate(System.currentTimeMillis());
 
         OperationMsg targetAccOp = new OperationMsg(request.getTargetAccountNumber());
-        targetAccOp.setType(OperationMsg.typeTransfer);
+        targetAccOp.setType(OperationEnum.przelew.getValue());
         targetAccOp.setAmount(request.getAmount());
         targetAccOp.setTitle(request.getTitle());
         targetAccOp.setNrb(request.getSourceAccountNumber());
-        targetAccOp.setDate(System.currentTimeMillis() / 1000L);
+        targetAccOp.setDate(System.currentTimeMillis());
 
         srcAccOp = OperationDAO.getInstance().executeOperations(srcAccOp, targetAccOp);
 
@@ -136,9 +137,9 @@ public class Utils {
 
     public static DepositResponse deposit(DepositMsg request) throws BankServiceException {
         OperationMsg srcAccOp = new OperationMsg(request.getAccountNumber());
-        srcAccOp.setType(OperationMsg.typeDeposit);
+        srcAccOp.setType(OperationEnum.wpłata.getValue());
         srcAccOp.setAmount(request.getAmount());
-        srcAccOp.setDate(System.currentTimeMillis() / 1000L);
+        srcAccOp.setDate(System.currentTimeMillis());
         srcAccOp.setTitle("Wpłata środków");
 
         srcAccOp = OperationDAO.getInstance().executeOperation(srcAccOp);
@@ -147,9 +148,9 @@ public class Utils {
 
     public static WithdrawResponse withdraw(DepositMsg request) throws BankServiceException {
         OperationMsg srcAccOp = new OperationMsg(request.getAccountNumber());
-        srcAccOp.setType(OperationMsg.typeWithdraw);
+        srcAccOp.setType(OperationEnum.wypłata.getValue());
         srcAccOp.setAmount(-request.getAmount());
-        srcAccOp.setDate(System.currentTimeMillis() / 1000L);
+        srcAccOp.setDate(System.currentTimeMillis());
         srcAccOp.setTitle("Wypłata środków");
 
         srcAccOp = OperationDAO.getInstance().executeOperation(srcAccOp);
