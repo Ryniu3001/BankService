@@ -37,9 +37,10 @@ public class RestClient {
                                 .post(Entity.entity(request, MediaType.APPLICATION_JSON), Response.class);
 
         System.out.println(response);
-        String errorMsg = response.readEntity(String.class);
-        System.out.println(errorMsg);
         if (response.getStatus() != Response.Status.CREATED.getStatusCode()){
+            String errorMsg = response.readEntity(String.class);
+
+            System.out.println(errorMsg);
             throw new BankServiceException("Bank zewnętrzny zwrócił błąd operacji: " + errorMsg, BankServiceException.REST_SERVICE_ERROR);
         }
 

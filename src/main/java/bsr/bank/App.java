@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 
 public class App extends Application{
-    public static String THIS_BANK = "00109711";
+    public static String THIS_BANK = "05109711";
 
     public static void main(String[] args) throws IOException {
 
@@ -25,6 +25,7 @@ public class App extends Application{
         URI baseUri = UriBuilder.fromUri("http://localhost/").port(8088).build();
         ResourceConfig config = new ResourceConfig().packages("bsr.bank.rest");
         config.register(AuthenticationFilter.class);
+
         HttpServer httpServer = GrizzlyHttpServerFactory.createHttpServer(baseUri, config);
 
         HttpHandler httpHandler = new JaxwsHandler(new BankService());

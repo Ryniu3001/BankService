@@ -41,7 +41,7 @@ public class ServiceValidator {
     public static void validate(DepositMsg request) throws BankServiceException {
         validateUuid(request.getUid());
         validateAccountNumber(request.getAccountNumber());
-        //validateAmount(request.getAccountNumber(), request.getAmount());
+        validateAmount(request.getAccountNumber(), request.getAmount());
     }
 
     private static void validateLogin(String login) throws BankServiceException {
@@ -91,7 +91,7 @@ public class ServiceValidator {
         if (msg.getId() == null)
             throw new BankServiceException("Brak konta o podanym numerze.", BankServiceException.NO_ACCOUNT);
         if (amount > msg.getBalance())
-            throwValidationEx("Not enough balance on your account.");
+            throwValidationEx("Insufficient funds in your account");
     }
 
     private static void throwValidationEx(String message) throws BankServiceException {
