@@ -41,7 +41,7 @@ public class ServiceValidator {
     public static void validate(DepositMsg request) throws BankServiceException {
         validateUuid(request.getUid());
         validateAccountNumber(request.getAccountNumber());
-        validateAmount(request.getAccountNumber(), request.getAmount());
+        validateAmountLessThanZero(request.getAmount());
     }
 
     private static void validateLogin(String login) throws BankServiceException {
@@ -85,8 +85,12 @@ public class ServiceValidator {
         if (title.isEmpty()) throwValidationEx("Title cannot be empty");
     }
 
-    private static void validateAmount(String accNumber, Integer amount) throws BankServiceException {
+    private static void validateAmountLessThanZero(Integer amount) throws BankServiceException{
         if (amount <= 0 ) throwValidationEx("Amount must be greater than 0.");
+    }
+
+    private static void validateAmount(String accNumber, Integer amount) throws BankServiceException {
+        validateAmountLessThanZero(amount);
         AccountMsg msg = AccountDAO.getInstance().get(new AccountMsg(accNumber));
         if (msg.getId() == null)
             throw new BankServiceException("Brak konta o podanym numerze.", BankServiceException.NO_ACCOUNT);

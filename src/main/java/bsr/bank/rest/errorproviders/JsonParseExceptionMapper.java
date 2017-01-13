@@ -14,7 +14,7 @@ import javax.ws.rs.ext.Provider;
 public class JsonParseExceptionMapper implements ExceptionMapper<JsonParseException> {
     @Override
     public Response toResponse(JsonParseException e) {
-        return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"invalid JSON format\"}")
+        return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"invalid JSON format.\"}")
                 .type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 }
