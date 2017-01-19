@@ -1,5 +1,7 @@
 package bsr.bank.dao.message;
 
+import bsr.bank.service.message.exception.BankServiceException;
+
 public class AccountMsg {
     private Integer id;
     private String accountNumber;
@@ -42,8 +44,13 @@ public class AccountMsg {
         this.balance = balance;
     }
 
-    public void addToBalance(Integer amount){
-        this.balance += amount;
+    public void addToBalance(Integer amount) throws BankServiceException {
+        try {
+            this.balance = Math.addExact(this.balance, amount);
+        } catch (ArithmeticException ex){
+            throw new BankServiceException("Too large amount. Target account reach max account balance.", BankServiceException.VALIDATION_ERROR);
+        }
+        //this.balance += amount;
     }
 
     public String getLogin() {

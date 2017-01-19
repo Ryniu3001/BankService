@@ -44,6 +44,13 @@ public class ServiceValidator {
         validateAmountLessThanZero(request.getAmount());
     }
 
+    public static void validate(WithdrawMsg request) throws BankServiceException {
+        validateUuid(request.getUid());
+        validateAccountNumber(request.getAccountNumber());
+        validateAmount(request.getAccountNumber(), request.getAmount());
+    }
+
+
     private static void validateLogin(String login) throws BankServiceException {
         if (login.isEmpty()) throwValidationEx("login cannot be empty!");
     }

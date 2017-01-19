@@ -41,7 +41,7 @@ public class RestService {
     }
 
     /**
-     * Przygotowuje operacje i zleca jej wykonanie na bazie danych
+     * Przygotowuje operacje odbioru przelewu z innego banku i zleca jej wykonanie na bazie danych
      * @param request
      * @throws BankServiceException
      */

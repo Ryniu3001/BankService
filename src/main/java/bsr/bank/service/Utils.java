@@ -100,6 +100,13 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Przelew środkow do innego banku
+     * @param request
+     * @param bankId
+     * @return
+     * @throws BankServiceException
+     */
     public static TransferResponse transferMoneyExternal(TransferRequest request, String bankId) throws BankServiceException {
 
         RestClient.invokeTransfer(request, bankId);
@@ -114,6 +121,12 @@ public class Utils {
         return new TransferResponse(operationMsg.getAccountNumber(), operationMsg.getBalance());
     }
 
+    /**
+     * Przelew srodkow w ramach banku
+     * @param request
+     * @return
+     * @throws BankServiceException
+     */
     public static TransferResponse transferMoneyInternal(TransferRequest request) throws BankServiceException {
 
         OperationMsg srcAccOp = new OperationMsg(request.getSourceAccountNumber());
