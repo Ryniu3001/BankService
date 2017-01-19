@@ -24,13 +24,6 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
 
     private static final String AUTHORIZATION_PROPERTY = "Authorization";
     private static final String AUTHENTICATION_SCHEME = "Basic";
-    private static final Response ACCESS_DENIED = Response.status(Response.Status.UNAUTHORIZED)
-            .entity(new ErrorMsg("You cannot access this resource")).build();
-    private static final Response ACCESS_FORBIDDEN = Response.status(Response.Status.FORBIDDEN)
-            .entity(new ErrorMsg("Access blocked for all users !!")).build();
-
-    private static Response NO_AUTHORIZATION_HEADER = Response.status(Response.Status.UNAUTHORIZED)
-            .entity(new ErrorMsg("No authorization header")).build();
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
@@ -39,7 +32,8 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
         if (!method.isAnnotationPresent(PermitAll.class)) {
             //Access denied for all
             if (method.isAnnotationPresent(DenyAll.class)) {
-                requestContext.abortWith(ACCESS_FORBIDDEN);
+                requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
+                        .entity(new ErrorMsg("Access blocked for all users !!")).build());
                 return;
             }
 
@@ -51,7 +45,8 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
 
             //If no authorization information present; block access
             if (authorization == null || authorization.isEmpty()) {
-                requestContext.abortWith(NO_AUTHORIZATION_HEADER);
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new ErrorMsg("No authorization header")).build());
                 return;
             }
 
@@ -73,8 +68,8 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
 
             //Verify user access
             if (!isUserAllowed(username, password)) {
-                requestContext.abortWith(ACCESS_DENIED);
-                return;
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new ErrorMsg("You cannot access this resource")).build());
             }
         }
     }

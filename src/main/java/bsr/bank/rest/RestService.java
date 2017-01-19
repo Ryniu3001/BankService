@@ -30,6 +30,9 @@ public class RestService {
         try {
             if (!validate(msg))
                 return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMsg("Bad request")).build();
+            if (hasLetter(msg.getSenderAccount()) || hasLetter(msg.getReceiverAccount())){
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorMsg("Account number cannot contain letters")).build();
+            }
             transferMoneyExternal(msg);
         } catch (BankServiceException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorMsg(e.getFaultInfo().getDetails())).build();
@@ -37,6 +40,11 @@ public class RestService {
         return Response.status(Response.Status.CREATED).build();
     }
 
+    /**
+     * Przygotowuje operacje i zleca jej wykonanie na bazie danych
+     * @param request
+     * @throws BankServiceException
+     */
     private static void transferMoneyExternal(TransferExternalMsg request) throws BankServiceException {
         OperationMsg operationMsg = new OperationMsg(request.getReceiverAccount());
         operationMsg.setTitle(request.getTitle());
@@ -47,6 +55,11 @@ public class RestService {
         OperationDAO.getInstance().executeOperation(operationMsg);
     }
 
+    /**
+     * Prosta walidacja danych wejściowych
+     * @param msg
+     * @return
+     */
     private boolean validate(TransferExternalMsg msg){
         if (nullOrEmpty(msg.getReceiverAccount())
                 || nullOrEmpty(msg.getSenderAccount())
@@ -62,5 +75,9 @@ public class RestService {
         if (str != null && !str.isEmpty())
             return false;
         return true;
+    }
+
+    private boolean hasLetter(String str){
+        return str.chars().anyMatch(Character::isAlphabetic);
     }
 }
