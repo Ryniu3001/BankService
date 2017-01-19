@@ -32,6 +32,8 @@ public class App extends Application{
         URI baseUri = UriBuilder.fromUri("http://0.0.0.0").port(8088).build();
         ResourceConfig config = new ResourceConfig().packages("bsr.bank.rest");
         config.register(AuthenticationFilter.class);
+        //On Windows it has to be done
+        config.register(JsonMappingExceptionMapper.class);
 
         HttpServer httpServer = GrizzlyHttpServerFactory.createHttpServer(baseUri, config);
         HttpHandler httpHandler = new JaxwsHandler(new BankService());
