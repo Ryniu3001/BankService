@@ -12,8 +12,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * Usługa REST odpowiedzialna za odbieranie przelewów z innych banków
+ */
 @Path("/")
 public class RestService {
+    /**
+     * Implementacja usługi transfer
+     * @param msg
+     * @return
+     */
     @POST
     @Path("/transfer")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -43,7 +51,8 @@ public class RestService {
         if (nullOrEmpty(msg.getReceiverAccount())
                 || nullOrEmpty(msg.getSenderAccount())
                 || nullOrEmpty(msg.getTitle())
-                || msg.getAmount() == null){
+                || msg.getAmount() == null
+                || msg.getAmount() < 0 ){
             return false;
         }
         return true;
