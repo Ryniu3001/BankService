@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Klasa udostępniająca operacje na tabeli Account
+ */
 public class AccountDAO extends BaseDAO {
     private static AccountDAO instance;
     private final static String INSERT_ACCOUNT = "INSERT INTO ACCOUNT (number, balance, login) " +

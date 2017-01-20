@@ -22,6 +22,11 @@ import java.util.UUID;
 public class Utils {
     private static final Map<String, String> sessions = new HashMap<>();
 
+    /**
+     * Pobiera login uzytkownika na podstawie przekazanego uid
+     * @param uuid unikalne id sesji użytkownika
+     * @return
+     */
     public static String getUserLoginFromSession(String uuid) {
         String login = sessions.get(uuid);
         return login;
@@ -31,6 +36,11 @@ public class Utils {
         sessions.remove(uuid);
     }
 
+    /**
+     * Generuj id sesji uzytkownika
+     * @param login login
+     * @return uid
+     */
     public static String createUserSession(String login){
         Optional<String> id = sessions.entrySet().stream()
                                         .filter(entry -> entry.getValue().equals(login))
@@ -43,6 +53,11 @@ public class Utils {
         return newId;
     }
 
+    /**
+     * Waliduje login i haslo uzytkownika
+     * @param request
+     * @return
+     */
     public static UserMsg validateCredentials(LoginRequest request){
         UserMsg user = UserDAO.getInstance().get(new UserMsg(request));
         if (user.getId() != null && user.getPassword().equals(request.getPassword()))
@@ -50,6 +65,10 @@ public class Utils {
         return null;
     }
 
+    /**
+     * Tworzy nowy numer konta
+     * @return numer konta
+     */
     public static String createNewAccountNumber(){
         Integer maxId = AccountDAO.getInstance().getMaxId();
         StringBuffer sb = new StringBuffer(maxId.toString());
@@ -60,6 +79,11 @@ public class Utils {
         return accNumber;
     }
 
+    /**
+     * Zwraca id banku na podstawie numeru konta
+     * @param accNumber numer konta
+     * @return id banku
+     */
     public static String getBankId(String accNumber){
         if (accNumber == null || accNumber.isEmpty()) {
             System.out.println("Niepoprawny numer konta.");
@@ -88,6 +112,11 @@ public class Utils {
         return mod + number;
     }
 
+    /**
+     * Weryfikuje poprawność przekazanego unmeru konta
+     * @param number numer konta
+     * @return True jeśli numer jes poprawny, False jesli jest inaczej
+     */
     public static boolean checkNRB(String number){
         if (number.length() != 26)
             throw new IllegalArgumentException("Niepoprawny numer dla kraju PL. Numer powinien składać się z 26 cyfr.");
@@ -148,6 +177,12 @@ public class Utils {
         return new TransferResponse(srcAccOp.getAccountNumber(), srcAccOp.getBalance());
     }
 
+    /**
+     * Tworzy operacje depozytu i zleca jej wykonanie
+     * @param request
+     * @return
+     * @throws BankServiceException
+     */
     public static DepositResponse deposit(DepositMsg request) throws BankServiceException {
         OperationMsg srcAccOp = new OperationMsg(request.getAccountNumber());
         srcAccOp.setType(OperationEnum.wpłata.getValue());
@@ -159,6 +194,12 @@ public class Utils {
         return new DepositResponse(srcAccOp.getAccountNumber(), srcAccOp.getBalance());
     }
 
+    /**
+     * Tworzy operacje wypłaty i zleca jej wykonanie
+     * @param request
+     * @return
+     * @throws BankServiceException
+     */
     public static WithdrawResponse withdraw(DepositMsg request) throws BankServiceException {
         OperationMsg srcAccOp = new OperationMsg(request.getAccountNumber());
         srcAccOp.setType(OperationEnum.wypłata.getValue());
@@ -170,6 +211,11 @@ public class Utils {
         return new WithdrawResponse(srcAccOp.getAccountNumber(), srcAccOp.getBalance());
     }
 
+    /**
+     * Przekształca obiekt modelu tabeli Account w obiekt odpowiedzi usługi
+     * @param msg
+     * @return
+     */
     public static AccountResponse AccountMsgToResponse(AccountMsg msg){
         return new AccountResponse(msg.getAccountNumber(), msg.getBalance(), msg.getLogin());
     }

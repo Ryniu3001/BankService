@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
 import static bsr.bank.service.Utils.transferMoneyExternal;
 import static bsr.bank.service.Utils.transferMoneyInternal;
 
+/**
+ * Usługa BankService
+ */
 @WebService(name = "BankPortType", portName = "BankPort", serviceName = "BankService", targetNamespace = "http://bsr.bank.pl")
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, parameterStyle = SOAPBinding.ParameterStyle.BARE, use = SOAPBinding.Use.LITERAL)
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)

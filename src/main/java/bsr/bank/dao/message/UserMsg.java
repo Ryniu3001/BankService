@@ -3,6 +3,9 @@ package bsr.bank.dao.message;
 import bsr.bank.service.message.LoginRequest;
 import bsr.bank.service.message.RegisterRequest;
 
+/**
+ * Model tabeli User
+ */
 public class UserMsg {
 
     private Integer id;

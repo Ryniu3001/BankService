@@ -16,12 +16,6 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 
-
-/*
-Oblsuga bledow koperty
-Ujemna kwota w przelewie json
-walidacja hasla
- */
 public class App extends Application{
     public static String THIS_BANK = "00109711";
 

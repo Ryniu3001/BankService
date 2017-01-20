@@ -1,6 +1,7 @@
 package bsr.bank.dao.message;
 
 /**
+ * Enum reprezentujący możliwe operacje do wykonania
  * Created by marcin on 29.12.16.
  */
 public enum OperationEnum {

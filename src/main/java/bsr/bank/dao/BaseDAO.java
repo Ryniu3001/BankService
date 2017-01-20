@@ -2,6 +2,9 @@ package bsr.bank.dao;
 
 import java.sql.*;
 
+/**
+ * Podstawowa klasa DAO udostępniająca metody zarządzające połączeniem do bazy danych.
+ */
 public abstract class BaseDAO {
 
     protected static final String DRIVER = "org.sqlite.JDBC";
@@ -53,6 +56,10 @@ public abstract class BaseDAO {
         }
     }
 
+    /**
+     * Tworzy plik ze strukturą bazy danych jeśli nie istnieje.
+     * @return True jesli nie było błędu
+     */
     public boolean createTables(){
         String createUser = "CREATE TABLE IF NOT EXISTS User (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name TEXT (30) NOT NULL, surname  TEXT (40) NOT NULL, " +

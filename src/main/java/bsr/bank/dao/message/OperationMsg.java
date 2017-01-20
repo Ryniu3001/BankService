@@ -5,6 +5,9 @@ import bsr.bank.service.message.Operation;
 
 import java.util.Date;
 
+/**
+ * Model tabeli Operation
+ */
 public class OperationMsg {
 
     public static final int typeTransfer = 0;

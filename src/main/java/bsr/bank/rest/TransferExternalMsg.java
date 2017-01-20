@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Zwiera definicję pól jakie przyjmuje usługa /transfer
+ */
 @XmlRootElement
 public class TransferExternalMsg {
     private Integer amount;

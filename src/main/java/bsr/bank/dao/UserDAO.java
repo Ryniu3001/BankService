@@ -7,6 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Klasa udostępniająca operacje na tabeli User
+ */
 public class UserDAO extends BaseDAO{
 
     private static UserDAO instance;

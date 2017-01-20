@@ -16,6 +16,9 @@ import java.util.StringTokenizer;
 
 import static bsr.bank.rest.RestHelper.getProperties;
 
+/**
+ * Klasa odpowiedzialna za walidacje uprawnień do usługi /transfer
+ */
 @Provider
 public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequestFilter {
 
@@ -74,6 +77,12 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
         }
     }
 
+    /**
+     * Waliduje login i hasło przekazane w parametrach
+     * @param username login
+     * @param password hasło
+     * @return
+     */
     private boolean isUserAllowed(final String username, final String password) {
         boolean isAllowed = false;
         //getProperties().getProperty("pass")

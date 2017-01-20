@@ -8,6 +8,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Klasa udostępniająca operacje na tabeli Operation
+ */
 public class OperationDAO extends BaseDAO{
     private static OperationDAO instance;
 

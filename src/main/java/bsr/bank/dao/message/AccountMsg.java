@@ -2,6 +2,9 @@ package bsr.bank.dao.message;
 
 import bsr.bank.service.message.exception.BankServiceException;
 
+/**
+ * Model tabeli Account
+ */
 public class AccountMsg {
     private Integer id;
     private String accountNumber;

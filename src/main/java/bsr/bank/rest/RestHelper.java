@@ -11,6 +11,10 @@ public final class RestHelper {
     private static Properties prop = new Properties();
     private static InputStream input = null;
 
+    /**
+     * zwraca wszystkie wpisy z pliku konfiguracyjnego
+     * @return
+     */
     public static Properties getProperties(){
         try {
             prop.clear();
