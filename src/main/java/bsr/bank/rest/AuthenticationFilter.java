@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import static bsr.bank.rest.RestHelper.prop;
+import static bsr.bank.rest.RestHelper.getProperties;
 
 @Provider
 public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequestFilter {
@@ -76,8 +76,8 @@ public class AuthenticationFilter implements javax.ws.rs.container.ContainerRequ
 
     private boolean isUserAllowed(final String username, final String password) {
         boolean isAllowed = false;
-
-        if (username.equals(prop.getProperty("login")) && password.equals(prop.getProperty("pass"))) {
+        //getProperties().getProperty("pass")
+        if (username.equals(getProperties().getProperty("login")) && password.equals("admin")) {
             isAllowed = true;
         }
         return isAllowed;

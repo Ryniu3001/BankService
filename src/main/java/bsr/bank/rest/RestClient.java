@@ -12,7 +12,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static bsr.bank.rest.RestHelper.prop;
+import static bsr.bank.rest.RestHelper.getProperties;
 
 public class RestClient {
 
@@ -20,12 +20,12 @@ public class RestClient {
 
     public static void invokeTransfer(TransferRequest msg, String bankId) throws BankServiceException {
         ClientConfig config = new ClientConfig();
-        HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(prop.getProperty("login"), prop.getProperty("pass"));
+        HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(getProperties().getProperty("login"), getProperties().getProperty("pass"));
         config.register(feature);
         Client client = ClientBuilder.newClient(config);
 
         //String bankId = Utils.getBankId(msg.getTargetAccountNumber());
-        String bankIp = prop.getProperty(bankId);
+        String bankIp = getProperties().getProperty(bankId);
         if (bankIp == null)
             throw new BankServiceException("Brak definicji dla banku o ID: " + bankId, BankServiceException.VALIDATION_ERROR);
         System.out.println(bankId + ": " + bankIp);
